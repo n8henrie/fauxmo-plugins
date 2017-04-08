@@ -1,0 +1,24 @@
+{
+    "FAUXMO": {
+        "ip_address": "auto"
+    },
+    "PLUGINS": {
+        "CommandLinePlugin": {
+            "path": "commandlineplugin.py",
+            "DEVICES": [
+                {
+                    "name": "test command line 1",
+                    "port": 12345,
+                    "on_cmd": "true",
+                    "off_cmd": "false"
+                },
+                {
+                    "name": "test command line 1",
+                    "port": 12346,
+                    "on_cmd": "test 42 = 42",
+                    "off_cmd": "test 42 = 43"
+                }
+            ]
+        }
+    }
+}
