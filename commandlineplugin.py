@@ -30,6 +30,7 @@ Example config:
   },
   "PLUGINS": {
     "CommandLinePlugin": {
+      "path": "/path/to/commandlineplugin.py",
       "DEVICES": [
         {
             "name": "output stuff to a file",

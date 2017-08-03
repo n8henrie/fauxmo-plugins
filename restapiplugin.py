@@ -13,6 +13,7 @@ Example config:
   },
   "PLUGINS": {
     "RESTAPIPlugin": {
+      "path": "/path/to/restapiplugin.py",
       "DEVICES": [
         {
           "port": 12340,

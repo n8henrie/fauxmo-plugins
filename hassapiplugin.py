@@ -19,6 +19,7 @@ Example config:
             "hass_host": "192.168.0.50",
             "hass_port": 8123,
             "hass_password": "abc123",
+            "path": "/path/to/hassapiplugin.py",
             "DEVICES": [
                 {
                     "name": "example hass device 1",
