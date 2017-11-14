@@ -1,2 +1,4 @@
 .cache/
 .tox/
+pytestdebug.log
+.mypy_cache
