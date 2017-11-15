@@ -1,7 +1,7 @@
 # fauxmo-plugins
 
 [![Build
-Status](https://travis-ci.org/n8henrie/fauxmo-plugins.svg?branch=master)](https://travis-ci.org/n8henrie/fauxmo-plugins)
+Status](https://travis-ci.org/n8henrie/fauxmo-plugins.svg?branch=dev)](https://travis-ci.org/n8henrie/fauxmo-plugins)
 
 Plugins for Fauxmo (emulated Wemo devices for the Amazon Echo)
 
