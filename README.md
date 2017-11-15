@@ -132,6 +132,23 @@ Fauxmo machinery by reading in your config and ensuring that e.g.
 `YourPlugin(**device).on()` works as intended (again, see
 `tests/test_restapiplugin.py` as an example).
 
+NB: The `requirements.txt` file is *only* used to make it easier to track the
+appropriate version of Fauxmo -- in the n8henrie/fauxmo-plugins@dev branch it
+tracks the GitHub-hosted n8henrie/fauxmo@dev version, so that I can develop
+simultaneously in these repos and have tox run tests against the appropriate
+versions. In the n8henrie/fauxmo-plugins@master branch, it will list
+`fauxmo>=VERSION`, where `VERSION` is the most recent Fauxmo release that I've
+personally tested against, and the `>=` ensures that it will try to run against
+the most recent PyPI release.
+
+I suggest that if you're developing locally and need to make simultaneous PRs
+against Fauxmo and Fauxmo-plugins that you check out a separate branch in each
+and temporarily change the `requirements.txt` file to something like `-e
+git+file:///abs/path/to/local/fauxmo/repo#egg=fauxmo`.
+
+The remainder of requirements (for linting, testing purposes) are in
+`requirements-test.txt`.
+
 ## Interesting Plugins (not included in this repo)
 
 - TODO
