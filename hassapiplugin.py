@@ -38,7 +38,7 @@ Example config:
 ```
 
 Dependencies:
-    homeassistant==0.40.1
+    homeassistant==0.57.3
 """
 
 
