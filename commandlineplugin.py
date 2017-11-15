@@ -46,7 +46,6 @@ Example config:
 ```
 """
 
-from functools import partialmethod  # type: ignore
 import shlex
 import subprocess
 

@@ -54,10 +54,8 @@ Example config:
 ```
 
 Dependencies:
-    requests==2.13.0
+    requests==2.18.4
 """
-
-from functools import partialmethod  # type: ignore
 
 import requests
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
@@ -126,7 +124,7 @@ class RESTAPIPlugin(FauxmoPlugin):
         self.method = method
         self.state_method = state_method
         self.headers = headers
-        self.auth = None  # type: Union[HTTPBasicAuth, HTTPDigestAuth]
+        self.auth: Union[HTTPBasicAuth, HTTPDigestAuth] = None
 
         self.on_cmd = on_cmd
         self.off_cmd = off_cmd
