@@ -5,11 +5,10 @@ import time
 from multiprocessing import Process
 from typing import Generator
 
-from restapiplugin import RESTAPIPlugin
-
 import httpbin
 import pytest
 import requests
+from restapiplugin import RESTAPIPlugin
 
 
 config_path_str = "tests/test_restapiplugin_config.json"
@@ -17,7 +16,7 @@ config_path_str = "tests/test_restapiplugin_config.json"
 
 @pytest.fixture(scope="function")
 def restapiplugin_target() -> Generator:
-    """Simulates the endpoints triggered by RESTAPIPlugin."""
+    """Simulate the endpoints triggered by RESTAPIPlugin."""
     fauxmo_device = Process(target=httpbin.core.app.run,
                             kwargs={"host": "127.0.0.1", "port": 8000},
                             daemon=True)
@@ -34,7 +33,7 @@ def restapiplugin_target() -> Generator:
 def test_restapiplugin_integration(fauxmo_server: pytest.fixture,
                                    restapiplugin_target: pytest.fixture) \
                 -> None:
-    """Test "on" and "off" actions for RESTAPIPlugin
+    """Test "on" and "off" actions for RESTAPIPlugin.
 
     This test uses requests to `post` a value to a Fauxmo device that
     simulates the way the Echo interacts with the Fauxmo server when it gets a
@@ -46,7 +45,6 @@ def test_restapiplugin_integration(fauxmo_server: pytest.fixture,
     requests.post -> Fauxmo device running at `port` -> target url (httpbin
     in this case, from the device's `on_cmd`)
     """
-
     command_format = ('SOAPACTION: '
                       '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format)
     data_template = '<BinaryState>{}</BinaryState>'.format
@@ -67,7 +65,7 @@ def test_restapiplugin_integration(fauxmo_server: pytest.fixture,
 
 
 def test_restapiplugin_unit(restapiplugin_target: pytest.fixture) -> None:
-    """Simpler unit tests on just the device without the integration"""
+    """Test simple unit tests on just the device without the integration."""
     with open(config_path_str) as f:
         config: dict = json.load(f)
 

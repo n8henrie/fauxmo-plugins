@@ -1,4 +1,4 @@
-"""restapiplugin.py
+"""Fauxmo plugin that runs a command on the local machine.
 
 Runs a `shlex`ed command using `subprocess.run`, keeping the default of
 `shell=False`. This is probaby frought with security concerns, which is why
@@ -65,8 +65,7 @@ class CommandLinePlugin(FauxmoPlugin):
             on_cmd: Command to be called when turning device on
             off_cmd: Command to be called when turning device off
             state_cmd: Command to check device state (return code 0 == on)
-       """
-
+        """
         self.on_cmd = on_cmd
         self.off_cmd = off_cmd
         self.state_cmd = state_cmd
@@ -81,7 +80,6 @@ class CommandLinePlugin(FauxmoPlugin):
         Returns:
             True if command seems to have run without error
         """
-
         shlexed_cmd = shlex.split(cmd)
         process = subprocess.run(shlexed_cmd)
         return process.returncode == 0
@@ -100,6 +98,7 @@ class CommandLinePlugin(FauxmoPlugin):
 
         Returns:
             True if command seems to have run without error.
+
         """
         return self.run_cmd(self.off_cmd)
 
@@ -115,8 +114,8 @@ class CommandLinePlugin(FauxmoPlugin):
 
         Returns:
             "on" or "off" if `state_cmd` is defined, "unknown" if undefined
-        """
 
+        """
         if self.state_cmd is None:
             return "unknown"
 

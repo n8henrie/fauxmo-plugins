@@ -6,23 +6,21 @@ For testing purposes, `on_cmd`s will run without error (return code 0) and
 
 import json
 
-from commandlineplugin import CommandLinePlugin
-
 import pytest
 import requests
+from commandlineplugin import CommandLinePlugin
 
 
 config_path_str = "tests/test_commandlineplugin_config.json"
 
 
 def test_commandlineplugin_integration(fauxmo_server: pytest.fixture) -> None:
-    """Test "on" and "off" actions for CommandLinePlugin
+    """Test "on" and "off" actions for CommandLinePlugin.
 
     This test uses requests to `post` a value to a Fauxmo device that
     simulates the way the Echo interacts with the Fauxmo server when it gets a
     request to turn something `on` or `off`.
     """
-
     command_format = ('SOAPACTION: '
                       '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format)
     data_template = '<BinaryState>{}</BinaryState>'.format
@@ -47,7 +45,7 @@ def test_commandlineplugin_integration(fauxmo_server: pytest.fixture) -> None:
 
 
 def test_commandlineplugin_unit() -> None:
-    """Simpler unit tests on just the device without the integration"""
+    """Test simpler unit tests on just the device without the integration."""
     with open(config_path_str) as f:
         config = json.load(f)
 

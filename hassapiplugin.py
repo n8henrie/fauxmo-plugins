@@ -1,4 +1,4 @@
-"""hassapiplugin.py :: HomeAssistant (hass) Plugin for Fauxmo.
+"""Fauxmo plugin to interact with HomeAssistant (hass) devices.
 
 Install to Fauxmo by downloading or cloning and including in your Fauxmo
 config. NB: For all Fauxmo plugins you must **manually** install any
@@ -43,14 +43,13 @@ Dependencies:
 
 
 import homeassistant.remote
-from homeassistant.const import (
+from fauxmo.plugins import FauxmoPlugin
+from homeassistant.const import (  # noqa
         SERVICE_TURN_ON, SERVICE_TURN_OFF,
         SERVICE_OPEN_COVER, SERVICE_CLOSE_COVER,
-        STATE_ON, STATE_OFF,
-        STATE_OPEN, STATE_CLOSED,
+        STATE_OFF, STATE_ON,
+        STATE_CLOSED, STATE_OPEN,
         )
-
-from fauxmo.plugins import FauxmoPlugin
 
 
 class HassAPIPlugin(FauxmoPlugin):
@@ -85,7 +84,7 @@ class HassAPIPlugin(FauxmoPlugin):
 
     def __init__(self, name: str, port: int, hass_host: str, entity_id: str,
                  hass_password: str=None, hass_port: int=8123) -> None:
-        """Initialize a HassAPIPlugin instance
+        """Initialize a HassAPIPlugin instance.
 
         Args:
             hass_host: IP address of device running Home Assistant
@@ -95,7 +94,6 @@ class HassAPIPlugin(FauxmoPlugin):
                           `curl http://IP/api/bootstrap | grep entity_id`
             hass_port: Port running hass on the host computer (default 8123)
         """
-
         self.hass_host = hass_host
         self.hass_password = hass_password
         self.entity_id = entity_id
@@ -123,20 +121,32 @@ class HassAPIPlugin(FauxmoPlugin):
             imported SERVICE_TURN_ON and SERVICE_TURN_OFF, make sure you import
             any others that you need.
         """
-
         homeassistant.remote.call_service(self.api, self.domain, signal,
                                           {'entity_id': self.entity_id})
         return True
 
     def on(self) -> bool:
+        """Turn the hass device on.
+
+        Returns:
+            Whether the device seems to have been turned on.
+
+        """
         on_cmd = HassAPIPlugin.service_map[self.domain.lower()]['on']
         return self.send(on_cmd)
 
     def off(self) -> bool:
+        """Turn the hass device off.
+
+        Returns:
+            Whether the device seems to have been turned off.
+
+        """
         off_cmd = HassAPIPlugin.service_map[self.domain.lower()]['off']
         return self.send(off_cmd)
 
     def get_state(self) -> str:
+        """Query the state of the hass device."""
         smap = HassAPIPlugin.service_map[self.domain.lower()]
         response = homeassistant.remote.get_state(self.api, self.entity_id)
 

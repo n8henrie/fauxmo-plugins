@@ -1,6 +1,4 @@
-"""restapiplugin.py
-
-Fauxmo plugin that provides access to services exposing a REST API.
+"""Fauxmo plugin that provides access to services exposing a REST API.
 
 Uses `requests` for a simpler api.
 
@@ -96,8 +94,7 @@ class RESTAPIPlugin(FauxmoPlugin):
             state_response_on: str = None,
             user: str=None,
             ) -> None:
-
-        """Initialize a RESTAPIPlugin instance
+        """Initialize a RESTAPIPlugin instance.
 
         Args:
             auth_type: Either `basic` or `digest` if needed
@@ -119,8 +116,7 @@ class RESTAPIPlugin(FauxmoPlugin):
             state_response_on: If this string is in the response to state_cmd,
                                the device is on.
             user: Username for `auth`
-       """
-
+        """
         self.method = method
         self.state_method = state_method
         self.headers = headers
@@ -160,7 +156,6 @@ class RESTAPIPlugin(FauxmoPlugin):
 
     def set_state(self, cmd: str, data: dict, json: dict) -> bool:
         """Call HTTP method via Requests."""
-
         r = requests.request(self.method, cmd, data=data, json=json,
                              headers=self.headers, auth=self.auth)
         return r.status_code in [200, 201]
