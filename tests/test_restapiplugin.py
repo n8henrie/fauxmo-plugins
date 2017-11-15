@@ -47,23 +47,37 @@ def test_restapiplugin_integration(fauxmo_server: pytest.fixture,
     in this case, from the device's `on_cmd`)
     """
 
+    command_format = ('SOAPACTION: '
+                      '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format)
     data_template = '<BinaryState>{}</BinaryState>'.format
-    data_on = data_template(1)
-    data_off = data_template(0)
+
+    data_get_state = command_format("Get")
+    data_on = command_format("Set") + data_template(1)
+    data_off = command_format("Set") + data_template(0)
 
     with fauxmo_server(config_path_str) as fauxmo_ip:
         base_url = f'http://{fauxmo_ip}:12345/upnp/control/basicevent1'
-        resp_on = requests.post(base_url, data=data_on)
-        resp_off = requests.post(base_url, data=data_off)
+        resp_on = requests.post(base_url, data=data_on.encode())
+        resp_off = requests.post(base_url, data=data_off.encode())
+        resp_state = requests.post(base_url, data=data_get_state.encode())
+
     assert resp_on.status_code == 200
     assert resp_off.status_code == 200
+    assert resp_state.status_code == 200
 
 
 def test_restapiplugin_unit(restapiplugin_target: pytest.fixture) -> None:
     """Simpler unit tests on just the device without the integration"""
     with open(config_path_str) as f:
-        config = json.load(f)  # type: dict
+        config: dict = json.load(f)
 
-    for device in config["PLUGINS"]["RESTAPIPlugin"]["DEVICES"]:
-        assert RESTAPIPlugin(**device).on() is True
-        assert RESTAPIPlugin(**device).off() is True
+    for device_conf in config["PLUGINS"]["RESTAPIPlugin"]["DEVICES"]:
+        device = RESTAPIPlugin(**device_conf)
+        assert device.on() is True
+        assert device.off() is True
+
+        state = device.get_state()
+        if device.state_cmd is not None:
+            assert state == "on"
+        else:
+            assert state == "unknown"

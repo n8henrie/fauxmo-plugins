@@ -20,7 +20,11 @@ Example config:
           "on_cmd": "http://192.168.1.3/myserver/switches/1/on",
           "off_cmd": "http://192.168.1.3/myserver/switches/1/off",
           "method": "GET",
-          "name": "fake switch one"
+          "name": "fake switch one",
+          "state_cmd": "http://192.168.1.3/myserver/switches/1/state",
+          "state_method": "GET",
+          "state_response_on": "<p>Your switch is on."</p>"
+          "state_response_off": "<p>Your switch is off.</p>"
         },
         {
           "port": 12341,
@@ -71,40 +75,73 @@ class RESTAPIPlugin(FauxmoPlugin):
     REST calls to a device.
     """
 
-    def __init__(self, name: str, port: int, on_cmd: str, off_cmd: str,
-                 method: str="GET", on_data: dict=None, off_data: dict=None,
-                 on_json: dict=None, off_json: dict=None, headers: dict=None,
-                 auth_type: str=None, user: str=None, password: str=None) \
-            -> None:
+    def __init__(
+            self,
+            *,
+            auth_type: str = None,
+            headers: dict = None,
+            method: str = "GET",
+            name: str,
+            off_cmd: str,
+            off_data: dict = None,
+            off_json: dict = None,
+            on_cmd: str,
+            on_data: dict = None,
+            on_json: dict = None,
+            password: str = None,
+            port: int,
+            state_cmd: str = None,
+            state_data: dict = None,
+            state_json: dict = None,
+            state_method: str = "GET",
+            state_response_off: str = None,
+            state_response_on: str = None,
+            user: str=None,
+            ) -> None:
 
         """Initialize a RESTAPIPlugin instance
 
         Args:
-            on_cmd: URL to be called when turning device on
-            off_cmd: URL to be called when turning device off
-            method: HTTP method to be used for both `on()` and `off()`
-            on_data: HTTP body to turn device on
-            off_data: HTTP body to turn device off
-            on_json: JSON body to turn device on
-            off_json: JSON body to turn device off
-            headers: Additional headers for both `on()` and `off()`
             auth_type: Either `basic` or `digest` if needed
-            user: Username for `auth`
+            headers: Additional headers for both `on()` and `off()`
+            method: HTTP method to be used for both `on()` and `off()`
+            off_cmd: URL to be called when turning device off
+            off_data: HTTP body to turn device off
+            off_json: JSON body to turn device off
+            on_cmd: URL to be called when turning device on
+            on_data: HTTP body to turn device on
+            on_json: JSON body to turn device on
             password: Password for `auth`
+            state_cmd: URL to be called to determine device state
+            state_data: Optional POST data to query device state
+            state_json: Optional json data to query device state
+            state_method: HTTP method to be used for `get_state()`
+            state_response_off: If this string is in the response to state_cmd,
+                                the device is off.
+            state_response_on: If this string is in the response to state_cmd,
+                               the device is on.
+            user: Username for `auth`
        """
 
         self.method = method
+        self.state_method = state_method
         self.headers = headers
         self.auth = None  # type: Union[HTTPBasicAuth, HTTPDigestAuth]
 
         self.on_cmd = on_cmd
         self.off_cmd = off_cmd
+        self.state_cmd = state_cmd
 
         self.on_data = on_data
         self.off_data = off_data
+        self.state_data = state_data
 
         self.on_json = on_json
         self.off_json = off_json
+        self.state_json = state_json
+
+        self.state_response_on = state_response_on
+        self.state_response_off = state_response_off
 
         if auth_type:
             if auth_type.lower() == "basic":
@@ -115,14 +152,37 @@ class RESTAPIPlugin(FauxmoPlugin):
 
         super().__init__(name=name, port=port)
 
-    def set_state(self, cmd: str, data: str, json: str) -> bool:
-        """Call HTTP method, for use by `functools.partialmethod`."""
+    def on(self) -> bool:
+        """Turn device on."""
+        return self.set_state(self.on_cmd, self.on_data, self.on_json)
 
-        r = requests.request(self.method, getattr(self, cmd),
-                             data=getattr(self, data),
-                             json=getattr(self, json), headers=self.headers,
-                             auth=self.auth)
+    def off(self) -> bool:
+        """Turn device off."""
+        return self.set_state(self.off_cmd, self.off_data, self.off_json)
+
+    def set_state(self, cmd: str, data: dict, json: dict) -> bool:
+        """Call HTTP method via Requests."""
+
+        r = requests.request(self.method, cmd, data=data, json=json,
+                             headers=self.headers, auth=self.auth)
         return r.status_code in [200, 201]
 
-    on = partialmethod(set_state, 'on_cmd', 'on_data', 'on_json')
-    off = partialmethod(set_state, 'off_cmd', 'off_data', 'off_json')
+    def get_state(self) -> str:
+        """Get device state.
+
+        Returns:
+            "on", "off", or "unknown"
+
+        """
+        if self.state_cmd is None:
+            return "unknown"
+
+        resp = requests.request(self.state_method, self.state_cmd,
+                                data=self.state_data, json=self.state_json,
+                                headers=self.headers, auth=self.auth)
+
+        if self.state_response_off in resp.text:
+            return "off"
+        elif self.state_response_on in resp.text:
+            return "on"
+        return "unknown"

@@ -37,6 +37,7 @@ Example config:
             "port": 49915,
             "on_cmd": "touch testfile.txt",
             "off_cmd": "rm testfile.txt"
+            "state_cmd": "ls testfile.txt"
         }
       ]
     }
@@ -55,8 +56,8 @@ from fauxmo.plugins import FauxmoPlugin
 class CommandLinePlugin(FauxmoPlugin):
     """Fauxmo Plugin for running commands on the local machine."""
 
-    def __init__(self, name: str, port: int, on_cmd: str, off_cmd: str) \
-            -> None:
+    def __init__(self, name: str, port: int, on_cmd: str, off_cmd: str,
+                 state_cmd: str = None) -> None:
         """Initialize a CommandLinePlugin instance.
 
         Args:
@@ -64,10 +65,12 @@ class CommandLinePlugin(FauxmoPlugin):
             port: Port on which to run a specific CommandLinePlugin instance
             on_cmd: Command to be called when turning device on
             off_cmd: Command to be called when turning device off
+            state_cmd: Command to check device state (return code 0 == on)
        """
 
         self.on_cmd = on_cmd
         self.off_cmd = off_cmd
+        self.state_cmd = state_cmd
 
         super().__init__(name=name, port=port)
 
@@ -75,14 +78,50 @@ class CommandLinePlugin(FauxmoPlugin):
         """Partialmethod to run command.
 
         Args:
-            cmd: Will be one of `"on_cmd"` or `"off_cmd"`, which `getattr` will
-                 use to get the instance attribute.
+            cmd: Command to be run
+        Returns:
+            True if command seems to have run without error
         """
 
-        command_str = getattr(self, cmd)
-        shlexed_cmd = shlex.split(command_str)
+        shlexed_cmd = shlex.split(cmd)
         process = subprocess.run(shlexed_cmd)
         return process.returncode == 0
 
-    on = partialmethod(run_cmd, "on_cmd")
-    off = partialmethod(run_cmd, "off_cmd")
+    def on(self) -> bool:
+        """Run on command.
+
+        Returns:
+            True if command seems to have run without error.
+
+        """
+        return self.run_cmd(self.on_cmd)
+
+    def off(self) -> bool:
+        """Run off command.
+
+        Returns:
+            True if command seems to have run without error.
+        """
+        return self.run_cmd(self.off_cmd)
+
+    def get_state(self) -> str:
+        """Get device state.
+
+        NB: Return code of `0` (i.e. ran without error) indicates "on" state,
+        otherwise will be off. making it easier to have something like `ls
+        path/to/pidfile` suggest `on`. Many command line switches may not
+        actually have a "state" per se (just an arbitary command you want to
+        run), in which case you could just put "false" as the command, which
+        should always return "off".
+
+        Returns:
+            "on" or "off" if `state_cmd` is defined, "unknown" if undefined
+        """
+
+        if self.state_cmd is None:
+            return "unknown"
+
+        returned_zero = self.run_cmd(self.state_cmd)
+        if returned_zero is True:
+            return "on"
+        return "off"

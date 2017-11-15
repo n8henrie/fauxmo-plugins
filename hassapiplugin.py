@@ -43,8 +43,12 @@ Dependencies:
 
 
 import homeassistant.remote
-from homeassistant.const import (SERVICE_TURN_ON, SERVICE_TURN_OFF,
-                                 SERVICE_OPEN_COVER, SERVICE_CLOSE_COVER)
+from homeassistant.const import (
+        SERVICE_TURN_ON, SERVICE_TURN_OFF,
+        SERVICE_OPEN_COVER, SERVICE_CLOSE_COVER,
+        STATE_ON, STATE_OFF,
+        STATE_OPEN, STATE_CLOSED,
+        )
 
 from fauxmo.plugins import FauxmoPlugin
 
@@ -61,19 +65,21 @@ class HassAPIPlugin(FauxmoPlugin):
     service_map = {
             'cover': {
                 'on': SERVICE_OPEN_COVER,
-                'off': SERVICE_CLOSE_COVER
+                'off': SERVICE_CLOSE_COVER,
+                'on_state': STATE_OPEN,
+                'off_state': STATE_CLOSED,
                 },
             'homeassistant': {
                 'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF
+                'off': SERVICE_TURN_OFF,
                 },
             'media_player': {
                 'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF
+                'off': SERVICE_TURN_OFF,
                 },
             'switch': {
                 'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF
+                'off': SERVICE_TURN_OFF,
                 },
             }
 
@@ -129,3 +135,14 @@ class HassAPIPlugin(FauxmoPlugin):
     def off(self) -> bool:
         off_cmd = HassAPIPlugin.service_map[self.domain.lower()]['off']
         return self.send(off_cmd)
+
+    def get_state(self) -> str:
+        smap = HassAPIPlugin.service_map[self.domain.lower()]
+        response = homeassistant.remote.get_state(self.api, self.entity_id)
+
+        # If no custom `on_state` key is set default to `STATE_ON`
+        if response.state == smap.get('on_state', STATE_ON):
+            return 'on'
+        elif response.state == smap.get('off_state', STATE_OFF):
+            return 'off'
+        return 'unknown'

@@ -33,9 +33,14 @@ requirements to get started:
 
 - Your plugin will be class that inherits from the
   `fauxmo.plugins.FauxmoPlugin` ABC.
-- Your plugin will override the abstract methods `on` and `off`, which will
-  unsurprisingly be called when you tell Alexa to turn a Fauxmo device on or
-  off. They should return a `bool` that suggests whether they succeeded.
+- Your plugin will override the abstract methods `on`, `off`, and `get_state`,
+  which will unsurprisingly be called when you tell Alexa to turn a Fauxmo
+  device on or off, and when Alexa [queries the device
+  state](https://github.com/n8henrie/fauxmo-plugins/issues/3). The `on` and
+  `off` methods should return a `bool` that suggests whether they succeeded,
+  and `get_state` should return `"on"`, `"off"`, or `"unknown"`. If you have no
+  way to query state, consider using a simple `return "unknown"` as your
+  `get_state` method.
 - Your plugin will be initialized if the exact (case sensitive) name is listed
   as a key under the `PLUGINS` section in your Fauxmo configuration (please see
   the Fauxmo docs for details), and if you include the path to the file
