@@ -65,46 +65,38 @@ class MQTTPlugin(FauxmoPlugin):
         self.qserver = MQTTserver
         self.qport = MQTTport
         self.status = "unknown"
+        self.client = mqtt.Client()
         super().__init__(name=name,port=port)
+		
+        self.client.connect(self.qserver,self.qport,60)
+        self.client.on_message = self.on_message
+        self.client.subscribe(self.state_cmd[0])
+        self.client.loop_start() 
+		
+        if not self.check_mqtt(): return False
 
     def on_message(self,client, userdata, msg):
         self.status=msg.payload.decode('utf-8')
-        client.loop_stop()
-        client.disconnect()
 
     def on(self) -> bool:
 
-        if not self.check_mqtt(): return False
-
-        client = mqtt.Client()
-        client.connect(self.qserver,self.qport,60)
-        client.publish(self.on_cmd[0],self.on_cmd[1]);
-        client.disconnect();
+        self.client.publish(self.on_cmd[0],self.on_cmd[1]);
 
         return True
 
     def off(self) -> bool:
 
-        if not self.check_mqtt(): return False
-
-        client = mqtt.Client()
-        client.connect(self.qserver,self.qport,60)
-        client.publish(self.off_cmd[0],self.off_cmd[1]);
-        client.disconnect();
+        self.client.publish(self.off_cmd[0],self.off_cmd[1]);
 
         return True
 
     def get_state(self) -> str:
-   #     print( "MQTT: Get State")
+        print( "MQTT: Get State")
 
         if(self.state_cmd is None): return "unknown"
-        if not self.check_mqtt(): return False
 
-        client = mqtt.Client()
-        client.on_message = self.on_message
-        client.connect(self.qserver,self.qport, 60)
-        client.subscribe(self.state_cmd[0])
-        client.loop_start() 
+        self.client.on_message = self.on_message
+        self.client.subscribe(self.state_cmd[0])
 
         return self.status
 
@@ -117,6 +109,6 @@ class MQTTPlugin(FauxmoPlugin):
 
         if(self.qport is None): 
             logger.error("MQTTport not provided in config.json.\n")
-            return False 
-
+            return False
+			
         return True                   
