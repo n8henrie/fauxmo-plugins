@@ -72,6 +72,10 @@ class HassAPIPlugin(FauxmoPlugin):
                 'on': SERVICE_TURN_ON,
                 'off': SERVICE_TURN_OFF,
                 },
+            'light': {
+                'on': SERVICE_TURN_ON,
+                'off': SERVICE_TURN_OFF,
+                },
             'media_player': {
                 'on': SERVICE_TURN_ON,
                 'off': SERVICE_TURN_OFF,
