@@ -2,3 +2,5 @@
 .tox/
 pytestdebug.log
 .mypy_cache
+.venv/
+.pytest_cache/
