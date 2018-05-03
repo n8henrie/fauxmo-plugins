@@ -29,18 +29,18 @@ test:
 test-all:
 	tox
 
-venv:
-	$(PYTHON) -m venv venv
-	venv/bin/pip install --upgrade pip wheel setuptools
+.venv:
+	$(PYTHON) -m venv .venv
+	./.venv/bin/pip install --upgrade pip wheel setuptools
 
 update-reqs:
 	@$(GREP) --invert-match --no-filename '^#' requirements*.txt | \
 		$(SED) 's|==.*$$||g' | \
-		xargs venv/bin/python -m pip install --upgrade; \
+		xargs ./.venv/bin/python -m pip install --upgrade; \
 	for reqfile in requirements*.txt; do \
 		echo "Updating $${reqfile}..."; \
-		venv/bin/python -c 'print("\n{:#^80}".format("  Updated reqs below  "))' >> "$${reqfile}"; \
-		for lib in $$(venv/bin/pip freeze --all --isolated --quiet | $(GREP) '=='); do \
+		./.venv/bin/python -c 'print("\n{:#^80}".format("  Updated reqs below  "))' >> "$${reqfile}"; \
+		for lib in $$(./.venv/bin/pip freeze --all --isolated --quiet | $(GREP) '=='); do \
 			if $(GREP) "^$${lib%%=*}==" "$${reqfile}" >/dev/null; then \
 				echo "$${lib}" >> "$${reqfile}"; \
 			fi; \
