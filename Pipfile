@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+"9c1bc09" = {file = "https://github.com/n8henrie/fauxmo/archive/dev.zip"}
+"flake8-docstrings" = "*"
+"flake8-import-order" = "*"
+"flake8" = "*"
+httpbin = "*"
+mypy = "*"
+paho-mqtt = "*"
+pytest = "*"
+requests = "*"
+tox = "*"
+
+[requires]
+python_version = "3.6"
