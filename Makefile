@@ -24,7 +24,7 @@ lint:
 	flake8 . tests
 
 test:
-	py.test tests
+	pytest tests
 
 test-all:
 	tox
