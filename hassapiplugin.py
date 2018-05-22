@@ -41,6 +41,7 @@ Dependencies:
     homeassistant==0.57.3
 """
 
+from collections import defaultdict
 
 import homeassistant.remote
 from fauxmo.plugins import FauxmoPlugin
@@ -61,30 +62,15 @@ class HassAPIPlugin(FauxmoPlugin):
     API.
     """
 
-    service_map = {
+    service_map = defaultdict(dict)
+    service_map.update({
             'cover': {
                 'on': SERVICE_OPEN_COVER,
                 'off': SERVICE_CLOSE_COVER,
                 'on_state': STATE_OPEN,
                 'off_state': STATE_CLOSED,
                 },
-            'homeassistant': {
-                'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF,
-                },
-            'light': {
-                'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF,
-                },
-            'media_player': {
-                'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF,
-                },
-            'switch': {
-                'on': SERVICE_TURN_ON,
-                'off': SERVICE_TURN_OFF,
-                },
-            }
+            })
 
     def __init__(self, name: str, port: int, hass_host: str, entity_id: str,
                  hass_password: str=None, hass_port: int=8123) -> None:
@@ -136,7 +122,11 @@ class HassAPIPlugin(FauxmoPlugin):
             Whether the device seems to have been turned on.
 
         """
-        on_cmd = HassAPIPlugin.service_map[self.domain.lower()]['on']
+        on_cmd = (
+                HassAPIPlugin
+                .service_map[self.domain.lower()]
+                .get('on', SERVICE_TURN_ON)
+                 )
         return self.send(on_cmd)
 
     def off(self) -> bool:
@@ -146,7 +136,11 @@ class HassAPIPlugin(FauxmoPlugin):
             Whether the device seems to have been turned off.
 
         """
-        off_cmd = HassAPIPlugin.service_map[self.domain.lower()]['off']
+        off_cmd = (
+                HassAPIPlugin
+                .service_map[self.domain.lower()]
+                .get('off', SERVICE_TURN_OFF)
+                 )
         return self.send(off_cmd)
 
     def get_state(self) -> str:
