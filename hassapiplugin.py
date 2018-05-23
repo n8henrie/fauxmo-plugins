@@ -42,6 +42,7 @@ Dependencies:
 """
 
 from collections import defaultdict
+from typing import Dict
 
 import homeassistant.remote
 from fauxmo.plugins import FauxmoPlugin
@@ -62,7 +63,7 @@ class HassAPIPlugin(FauxmoPlugin):
     API.
     """
 
-    service_map = defaultdict(dict)
+    service_map: Dict[str, Dict[str, str]] = defaultdict(dict)
     service_map.update({
             'cover': {
                 'on': SERVICE_OPEN_COVER,
