@@ -5,6 +5,10 @@ config. NB: For all Fauxmo plugins you must **manually** install any
 required 3rd party modules (e.g. `homeassistant`) -- make sure you install
 them where Fauxmo can find them (i.e. the same virtualenv).
 
+If using the new hass authentication system instead of legacy api key, make
+sure you have `api:` enabled in your hass config, and use a long-lived token
+hass your `hass_password`.
+
 Example config:
 
     def __init__(self, name: str, port: int, hass_host: str, hass_password:
