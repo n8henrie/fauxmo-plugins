@@ -105,7 +105,6 @@ class HomeAssistantPlugin(FauxmoPlugin):
         data = {'entity_id': self.entity_id}
 
         response = post(url, headers=headers, data=json.dumps(data))
-        print(self.get_state())
         return response.status_code == 200
 
     def on(self) -> bool:
