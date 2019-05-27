@@ -19,16 +19,21 @@ class TestFauxmoServer:
 
     def __enter__(self) -> str:
         """Start a TextFauxmoServer, returns the ip address it's running on."""
-        self.server = Process(target=fauxmo.main,
-                              kwargs={'config_path_str': self.config_path_str},
-                              daemon=True)
+        self.server = Process(
+            target=fauxmo.main,
+            kwargs={"config_path_str": self.config_path_str},
+            daemon=True,
+        )
         self.server.start()
         time.sleep(1)
         return get_local_ip()
 
-    def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value:
-                 Optional[Exception], traceback: Optional[TracebackType]) \
-            -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[Exception],
+        traceback: Optional[TracebackType],
+    ) -> None:
         """Terminate the server and join the thread on exit."""
         self.server.terminate()
         self.server.join()

@@ -15,9 +15,10 @@ def test_mqttplugin_mosquitto_dot_org() -> None:
         config: dict = json.load(f)
 
     mosquitto_devices = (
-            device for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
-            if device['mqtt_server'] == "test.mosquitto.org"
-            )
+        device
+        for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
+        if device["mqtt_server"] == "test.mosquitto.org"
+    )
     for device_conf in mosquitto_devices:
         device = MQTTPlugin(**device_conf)
 
@@ -53,12 +54,12 @@ def test_mqtt_auth(mock_client: MagicMock) -> None:
         config: dict = json.load(f)
 
     device_conf = next(
-            device for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
-            if device['mqtt_server'] == "mqtt.yes_auth.no_state"
-            )
+        device
+        for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
+        if device["mqtt_server"] == "mqtt.yes_auth.no_state"
+    )
     MQTTPlugin(**device_conf)
-    mock_instance.username_pw_set.assert_called_once_with("MyUser",
-                                                          "MyPassword")
+    mock_instance.username_pw_set.assert_called_once_with("MyUser", "MyPassword")
 
 
 @patch("mqttplugin.Client", autospec=True)
@@ -69,9 +70,10 @@ def test_mqtt_nostate(mock_client: MagicMock) -> None:
         config: dict = json.load(f)
 
     device_conf = next(
-            device for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
-            if device['mqtt_server'] == "mqtt.yes_auth.no_state"
-            )
+        device
+        for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
+        if device["mqtt_server"] == "mqtt.yes_auth.no_state"
+    )
     device = MQTTPlugin(**device_conf)
     mock_instance.loop_start.assert_not_called()
     mock_instance.subscribe.assert_not_called()
@@ -86,8 +88,9 @@ def test_mqtt_noauth(mock_client: MagicMock) -> None:
         config: dict = json.load(f)
 
     device_conf = next(
-            device for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
-            if device['mqtt_server'] == "mqtt.no_auth.yes_state"
-            )
+        device
+        for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
+        if device["mqtt_server"] == "mqtt.no_auth.yes_state"
+    )
     MQTTPlugin(**device_conf)
     mock_instance.username_pw_set.assert_not_called()

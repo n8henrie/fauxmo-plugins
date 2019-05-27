@@ -77,19 +77,18 @@ class MQTTPlugin(FauxmoPlugin):
     """Fauxmo plugin to interact with an MQTT server by way of paho."""
 
     def __init__(
-            self,
-            *,
-            name: str,
-            port: int,
-
-            off_cmd: Sequence[str],
-            on_cmd: Sequence[str],
-            mqtt_port: int = 1883,
-            mqtt_pw: str = None,
-            mqtt_user: str = None,
-            mqtt_server: str = "127.0.0.1",
-            state_cmd: str = None,
-            ) -> None:
+        self,
+        *,
+        name: str,
+        port: int,
+        off_cmd: Sequence[str],
+        on_cmd: Sequence[str],
+        mqtt_port: int = 1883,
+        mqtt_pw: str = None,
+        mqtt_user: str = None,
+        mqtt_server: str = "127.0.0.1",
+        state_cmd: str = None,
+    ) -> None:
         """Initialize an MQTTPlugin instance.
 
         Kwargs:
@@ -130,21 +129,24 @@ class MQTTPlugin(FauxmoPlugin):
         """Property to return whether the subscription has completed."""
         return self._subscribed
 
-    def on_subscribe(self, client: Client, userdata: str, mid: int,
-                     granted_qos: List[int]) -> None:
+    def on_subscribe(
+        self, client: Client, userdata: str, mid: int, granted_qos: List[int]
+    ) -> None:
         """Set attribute to show that initial subscription is complete."""
         self._subscribed = True
 
-    def on_connect(self, client: Client, userdata: str, flags: dict,
-                   rc: int) -> None:
+    def on_connect(
+        self, client: Client, userdata: str, flags: dict, rc: int
+    ) -> None:
         """Subscribe to state command on connect (or reconnect)."""
         if self.state_cmd is not None:
             self.client.subscribe(self.state_cmd)
 
-    def on_message(self, client: Client, userdata: str,
-                   message: MQTTMessage) -> None:
+    def on_message(
+        self, client: Client, userdata: str, message: MQTTMessage
+    ) -> None:
         """Process an incoming message."""
-        status = message.payload.decode('utf-8')
+        status = message.payload.decode("utf-8")
 
         if status == self.off_value:
             self.status = "off"

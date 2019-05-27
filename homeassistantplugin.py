@@ -44,32 +44,27 @@ class HomeAssistantPlugin(FauxmoPlugin):
     """
 
     service_map = {
-        'cover': {
-            'on': 'open_cover',
-            'off': 'close_cover',
-            'on_state': 'open',
-            'off_state': 'closed',
+        "cover": {
+            "on": "open_cover",
+            "off": "close_cover",
+            "on_state": "open",
+            "off_state": "closed",
         },
-        'homeassistant': {
-            'on': 'turn_on',
-            'off': 'turn_off',
-        },
-        'light': {
-            'on': 'turn_on',
-            'off': 'turn_off',
-        },
-        'media_player': {
-            'on': 'turn_on',
-            'off': 'turn_off',
-        },
-        'switch': {
-            'on': 'turn_on',
-            'off': 'turn_off',
-        },
+        "homeassistant": {"on": "turn_on", "off": "turn_off"},
+        "light": {"on": "turn_on", "off": "turn_off"},
+        "media_player": {"on": "turn_on", "off": "turn_off"},
+        "switch": {"on": "turn_on", "off": "turn_off"},
     }
 
-    def __init__(self, name: str, port: int, entity_id: str, ha_host: str,
-                 ha_token: str = None, ha_port: int = 8123) -> None:
+    def __init__(
+        self,
+        name: str,
+        port: int,
+        entity_id: str,
+        ha_host: str,
+        ha_token: str = None,
+        ha_port: int = 8123,
+    ) -> None:
         """Initialize a HomeAssistantPlugin instance.
         Args:
             ha_host: IP address of device running Home Assistant
@@ -87,8 +82,8 @@ class HomeAssistantPlugin(FauxmoPlugin):
         self.ha_port = ha_port
 
         self.domain = self.entity_id.split(".")[0]
-        if self.domain == 'group':
-            self.domain = 'homeassistant'
+        if self.domain == "group":
+            self.domain = "homeassistant"
 
         super().__init__(name=name, port=port)
 
@@ -96,13 +91,21 @@ class HomeAssistantPlugin(FauxmoPlugin):
         """Args:
             signal (const): the state to change to; see service_map
         """
-        url = 'http://' + self.ha_host + ':' + str(self.ha_port) + \
-              '/api/services/' + self.domain + '/' + signal
+        url = (
+            "http://"
+            + self.ha_host
+            + ":"
+            + str(self.ha_port)
+            + "/api/services/"
+            + self.domain
+            + "/"
+            + signal
+        )
         headers = {
-            'Authorization': 'Bearer ' + str(self.ha_token),
-            'content-type': 'application/json',
+            "Authorization": "Bearer " + str(self.ha_token),
+            "content-type": "application/json",
         }
-        data = {'entity_id': self.entity_id}
+        data = {"entity_id": self.entity_id}
 
         response = post(url, headers=headers, data=json.dumps(data))
         return response.status_code == 200
@@ -112,7 +115,7 @@ class HomeAssistantPlugin(FauxmoPlugin):
         Returns:
             Whether the device seems to have been turned on.
         """
-        on_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]['on']
+        on_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]["on"]
         return self.send(on_cmd)
 
     def off(self) -> bool:
@@ -120,18 +123,24 @@ class HomeAssistantPlugin(FauxmoPlugin):
         Returns:
             Whether the device seems to have been turned off.
         """
-        off_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]['off']
+        off_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]["off"]
         return self.send(off_cmd)
 
     def get_state(self) -> str:
         """Query the state of the Home Assistant device."""
 
-        url = 'http://' + self.ha_host + ':' + str(self.ha_port) + \
-              '/api/states/' + self.entity_id
+        url = (
+            "http://"
+            + self.ha_host
+            + ":"
+            + str(self.ha_port)
+            + "/api/states/"
+            + self.entity_id
+        )
         headers = {
-            'Authorization': 'Bearer ' + str(self.ha_token),
-            'content-type': 'application/json',
+            "Authorization": "Bearer " + str(self.ha_token),
+            "content-type": "application/json",
         }
 
         response = get(url, headers=headers)
-        return json.loads(response.text)['state']
+        return json.loads(response.text)["state"]

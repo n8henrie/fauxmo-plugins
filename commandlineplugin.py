@@ -55,8 +55,14 @@ from fauxmo.plugins import FauxmoPlugin
 class CommandLinePlugin(FauxmoPlugin):
     """Fauxmo Plugin for running commands on the local machine."""
 
-    def __init__(self, name: str, port: int, on_cmd: str, off_cmd: str,
-                 state_cmd: str = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        port: int,
+        on_cmd: str,
+        off_cmd: str,
+        state_cmd: str = None,
+    ) -> None:
         """Initialize a CommandLinePlugin instance.
 
         Args:

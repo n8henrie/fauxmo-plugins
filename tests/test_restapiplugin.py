@@ -17,9 +17,11 @@ config_path_str = "tests/test_restapiplugin_config.json"
 @pytest.fixture(scope="function")
 def restapiplugin_target() -> Generator:
     """Simulate the endpoints triggered by RESTAPIPlugin."""
-    fauxmo_device = Process(target=httpbin.core.app.run,
-                            kwargs={"host": "127.0.0.1", "port": 8000},
-                            daemon=True)
+    fauxmo_device = Process(
+        target=httpbin.core.app.run,
+        kwargs={"host": "127.0.0.1", "port": 8000},
+        daemon=True,
+    )
 
     fauxmo_device.start()
     time.sleep(1)
@@ -30,9 +32,9 @@ def restapiplugin_target() -> Generator:
     fauxmo_device.join()
 
 
-def test_restapiplugin_integration(fauxmo_server: pytest.fixture,
-                                   restapiplugin_target: pytest.fixture) \
-                -> None:
+def test_restapiplugin_integration(
+    fauxmo_server: pytest.fixture, restapiplugin_target: pytest.fixture
+) -> None:
     """Test "on" and "off" actions for RESTAPIPlugin.
 
     This test uses requests to `post` a value to a Fauxmo device that
@@ -45,16 +47,17 @@ def test_restapiplugin_integration(fauxmo_server: pytest.fixture,
     requests.post -> Fauxmo device running at `port` -> target url (httpbin
     in this case, from the device's `on_cmd`)
     """
-    command_format = ('SOAPACTION: '
-                      '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format)
-    data_template = '<BinaryState>{}</BinaryState>'.format
+    command_format = (
+        "SOAPACTION: " '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format
+    )
+    data_template = "<BinaryState>{}</BinaryState>".format
 
     data_get_state = command_format("Get")
     data_on = command_format("Set") + data_template(1)
     data_off = command_format("Set") + data_template(0)
 
     with fauxmo_server(config_path_str) as fauxmo_ip:
-        base_url = f'http://{fauxmo_ip}:12345/upnp/control/basicevent1'
+        base_url = f"http://{fauxmo_ip}:12345/upnp/control/basicevent1"
         resp_on = requests.post(base_url, data=data_on.encode())
         resp_off = requests.post(base_url, data=data_off.encode())
         resp_state = requests.post(base_url, data=data_get_state.encode())

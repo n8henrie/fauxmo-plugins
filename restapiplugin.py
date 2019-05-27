@@ -72,28 +72,28 @@ class RESTAPIPlugin(FauxmoPlugin):
     """
 
     def __init__(
-            self,
-            *,
-            auth_type: str = None,
-            headers: dict = None,
-            method: str = "GET",
-            name: str,
-            off_cmd: str,
-            off_data: dict = None,
-            off_json: dict = None,
-            on_cmd: str,
-            on_data: dict = None,
-            on_json: dict = None,
-            password: str = None,
-            port: int,
-            state_cmd: str = None,
-            state_data: dict = None,
-            state_json: dict = None,
-            state_method: str = "GET",
-            state_response_off: str = None,
-            state_response_on: str = None,
-            user: str=None,
-            ) -> None:
+        self,
+        *,
+        auth_type: str = None,
+        headers: dict = None,
+        method: str = "GET",
+        name: str,
+        off_cmd: str,
+        off_data: dict = None,
+        off_json: dict = None,
+        on_cmd: str,
+        on_data: dict = None,
+        on_json: dict = None,
+        password: str = None,
+        port: int,
+        state_cmd: str = None,
+        state_data: dict = None,
+        state_json: dict = None,
+        state_method: str = "GET",
+        state_response_off: str = None,
+        state_response_on: str = None,
+        user: str = None,
+    ) -> None:
         """Initialize a RESTAPIPlugin instance.
 
         Args:
@@ -156,8 +156,14 @@ class RESTAPIPlugin(FauxmoPlugin):
 
     def set_state(self, cmd: str, data: dict, json: dict) -> bool:
         """Call HTTP method via Requests."""
-        r = requests.request(self.method, cmd, data=data, json=json,
-                             headers=self.headers, auth=self.auth)
+        r = requests.request(
+            self.method,
+            cmd,
+            data=data,
+            json=json,
+            headers=self.headers,
+            auth=self.auth,
+        )
         return r.status_code in [200, 201]
 
     def get_state(self) -> str:
@@ -170,9 +176,14 @@ class RESTAPIPlugin(FauxmoPlugin):
         if self.state_cmd is None:
             return "unknown"
 
-        resp = requests.request(self.state_method, self.state_cmd,
-                                data=self.state_data, json=self.state_json,
-                                headers=self.headers, auth=self.auth)
+        resp = requests.request(
+            self.state_method,
+            self.state_cmd,
+            data=self.state_data,
+            json=self.state_json,
+            headers=self.headers,
+            auth=self.auth,
+        )
 
         if self.state_response_off in resp.text:
             return "off"

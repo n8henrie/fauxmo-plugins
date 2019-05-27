@@ -21,16 +21,17 @@ def test_commandlineplugin_integration(fauxmo_server: pytest.fixture) -> None:
     simulates the way the Echo interacts with the Fauxmo server when it gets a
     request to turn something `on` or `off`.
     """
-    command_format = ('SOAPACTION: '
-                      '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format)
-    data_template = '<BinaryState>{}</BinaryState>'.format
+    command_format = (
+        "SOAPACTION: " '"urn:Belkin:service:basicevent:1#{}BinaryState"'.format
+    )
+    data_template = "<BinaryState>{}</BinaryState>".format
 
     data_get_state = command_format("Get")
     data_on = command_format("Set") + data_template(1)
     data_off = command_format("Set") + data_template(0)
 
     with fauxmo_server(config_path_str) as fauxmo_ip:
-        base_url = f'http://{fauxmo_ip}:12345/upnp/control/basicevent1'
+        base_url = f"http://{fauxmo_ip}:12345/upnp/control/basicevent1"
         resp_on = requests.post(base_url, data=data_on.encode())
 
         # Off command return code is not 0, so hangs and returns an error to
