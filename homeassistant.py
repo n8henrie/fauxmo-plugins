@@ -1,4 +1,5 @@
 """Fauxmo plugin to interact with Home Assistant devices.
+
 Install to Fauxmo by downloading or cloning and including in your Fauxmo
 config.
 Example config:
@@ -34,11 +35,12 @@ Example config:
 import json
 
 from fauxmo.plugins import FauxmoPlugin
-from requests import post, get
+from requests import get, post
 
 
 class HomeAssistantPlugin(FauxmoPlugin):
     """Fauxmo Plugin for Home Assistant REST API.
+
     Allows users to specify Home Assistant services in their config.json and
     toggle these with the Echo.
     """
@@ -71,6 +73,7 @@ class HomeAssistantPlugin(FauxmoPlugin):
     def __init__(self, name: str, port: int, entity_id: str, ha_host: str,
                  ha_token: str = None, ha_port: int = 8123) -> None:
         """Initialize a HomeAssistantPlugin instance.
+
         Args:
             ha_host: IP address of device running Home Assistant
             ha_token: long lived Home Assistant token
@@ -93,7 +96,9 @@ class HomeAssistantPlugin(FauxmoPlugin):
         super().__init__(name=name, port=port)
 
     def send(self, signal: str) -> bool:
-        """Args:
+        """Send the updated state to Home Assistant.
+
+        Args:
             signal (const): the state to change to; see service_map
         """
         url = 'http://' + self.ha_host + ':' + str(self.ha_port) + \
@@ -104,28 +109,35 @@ class HomeAssistantPlugin(FauxmoPlugin):
         }
         data = {'entity_id': self.entity_id}
 
-        response = post(url, headers=headers, data=json.dumps(data))
+        response = post(
+            url,
+            headers=headers,
+            data=str.encode(json.dumps(data))
+        )
         return response.status_code == 200
 
     def on(self) -> bool:
         """Turn the Home Assistant device on.
+
         Returns:
             Whether the device seems to have been turned on.
+
         """
         on_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]['on']
         return self.send(on_cmd)
 
     def off(self) -> bool:
         """Turn the Home Assistant device off.
+
         Returns:
             Whether the device seems to have been turned off.
+
         """
         off_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]['off']
         return self.send(off_cmd)
 
     def get_state(self) -> str:
         """Query the state of the Home Assistant device."""
-
         url = 'http://' + self.ha_host + ':' + str(self.ha_port) + \
               '/api/states/' + self.entity_id
         headers = {

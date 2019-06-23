@@ -87,7 +87,7 @@ Alternatively,
 If you think your plugin would be good to include in the `fauxmo-plugins`
 repo, feel free to send me a pull request. To be merged:
 
-- Must by python 3.6+ compatible
+- Must by python 3.7+ compatible
 - Include a reasonable docstring that:
   - Explains the intended purpose, usage, and any required config variables.
   - Includes as pinned version numbers for any dependencies at the end.

@@ -92,8 +92,7 @@ class RESTAPIPlugin(FauxmoPlugin):
             state_method: str = "GET",
             state_response_off: str = None,
             state_response_on: str = None,
-            user: str=None,
-            ) -> None:
+            user: str = None) -> None:
         """Initialize a RESTAPIPlugin instance.
 
         Args:
