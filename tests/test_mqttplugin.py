@@ -59,7 +59,9 @@ def test_mqtt_auth(mock_client: MagicMock) -> None:
         if device["mqtt_server"] == "mqtt.yes_auth.no_state"
     )
     MQTTPlugin(**device_conf)
-    mock_instance.username_pw_set.assert_called_once_with("MyUser", "MyPassword")
+    mock_instance.username_pw_set.assert_called_once_with(
+        "MyUser", "MyPassword"
+    )
 
 
 @patch("mqttplugin.Client", autospec=True)
