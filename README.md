@@ -20,7 +20,7 @@ referred to as `handlers`.
 - I'll be able to update plugins without having to release a new version of
   Fauxmo core, keeping them in their own separate VCS silos.
 - I can implement probably unsafe code like the new `CommandLinePlugin` as a
-  plugin and users wanting such functionality can easily install at their own
+  plugin, and users wanting such functionality can easily install at their own
   risk without making *all* Fauxmo users do so.
 
 ## Using plugins
