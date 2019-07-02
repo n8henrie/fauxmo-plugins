@@ -36,14 +36,25 @@ Example config:
           "name": "fake Indigo switch"
         },
         {
-          "name": "home assistant switch by REST API",
+          "name": "fake HomeAssistant switch via REST API",
           "port": 12342,
-          "on_cmd": "http://192.168.1.4:8123/api/services/switch/turn_on",
-          "off_cmd": "http://192.168.1.4:8123/api/services/switch/turn_off",
+          "on_cmd": "http://192.168.0.5:8123/api/services/switch/turn_on",
+          "off_cmd": "http://192.168.0.5:8123/api/services/switch/turn_off",
           "method": "POST",
-          "headers": {"x-ha-access": "your_hass_password"},
-          "on_data": {"entity_id": "switch.fake_hass_switch"},
-          "off_data": {"entity_id": "switch.fake_hass_switch"}
+          "headers": {
+              "Authorization": "Bearer TOKENGOESHERE",
+              "Content-Type": "application/json"
+          },
+          "on_json": {
+              "entity_id": "switch.fake_hass_switch"
+          },
+          "off_json": {
+              "entity_id": "switch.fake_hass_switch"
+          },
+          "state_method": "GET",
+          "state_cmd": "http://192.168.0.5:8123/api/states/switch.fake_hass_switch",
+          "state_response_on": "\"state\": \"on\"",
+          "state_response_off": "\"state\": \"off\""
         }
       ]
     }
