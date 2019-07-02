@@ -1,6 +1,20 @@
 """Fauxmo plugin to interact with Home Assistant devices.
+
+One simple way to find your entity_id is to use curl and pipe to grep or jq:
+
+    curl -s http://IP:PORT/api/states | jq
+
+NB: This is just a special case of the RESTAPIPlugin (or even SimpleHTTPPlugin,
+see `config-sample.json` in the main Fauxmo repo), but it makes config
+substantially easier by not having to redundantly specify headers and
+endpoints.
+
 Install to Fauxmo by downloading or cloning and including in your Fauxmo
-config.
+config. One easy way to make a long-lived access token is by using the frontend
+and going to the `/profile` endpoint, scroll to the bottom. Documentation on
+the long-lived tokens is available at
+https://developers.home-assistant.io/docs/en/auth_api.html#long-lived-access-token
+
 Example config:
 ```
 {
@@ -11,8 +25,9 @@ Example config:
         "HomeAssistantPlugin": {
             "ha_host": "192.168.0.50",
             "ha_port": 8123,
+            "ha_protocol": "http",
             "ha_token": "abc123",
-            "path": "/path/to/Home Assistantapiplugin.py",
+            "path": "/path/to/homeassistantplugin.py",
             "DEVICES": [
                 {
                     "name": "example Home Assistant device 1",
@@ -32,13 +47,15 @@ Example config:
 """
 
 import json
+import urllib.parse
+import urllib.request
 
 from fauxmo.plugins import FauxmoPlugin
-from requests import post, get
 
 
 class HomeAssistantPlugin(FauxmoPlugin):
-    """Fauxmo Plugin for Home Assistant REST API.
+    """Fauxmo plugin for HomeAssistant REST API.
+
     Allows users to specify Home Assistant services in their config.json and
     toggle these with the Echo.
     """
@@ -62,85 +79,75 @@ class HomeAssistantPlugin(FauxmoPlugin):
         port: int,
         entity_id: str,
         ha_host: str,
-        ha_token: str = None,
         ha_port: int = 8123,
+        ha_protocol: str = "http",
+        ha_token: str = None,
     ) -> None:
         """Initialize a HomeAssistantPlugin instance.
+
         Args:
-            ha_host: IP address of device running Home Assistant
-            ha_token: long lived Home Assistant token
-            entity_id: `entity_id` used by Home Assistant,
-                       one easy way to find is to
-                       curl and grep the REST API, eg:
-                       `curl http://IP/api/bootstrap | grep entity_id`
-            ha_port: Port running Home Assistant
-                     on the host computer (default 8123)
+            ha_token: Long-lived HomeAssistant token
+            entity_id: `entity_id` used by HomeAssistant
+            ha_host: Host running HomeAssistant
+            ha_port: Port number for HomeAssistant access
+            ha_protocol: http or https
         """
-        self.ha_host = ha_host
-        self.ha_token = ha_token
+        self.ha_url = f"{ha_protocol}://{ha_host}:{ha_port}"
+
         self.entity_id = entity_id
-        self.ha_port = ha_port
 
         self.domain = self.entity_id.split(".")[0]
         if self.domain == "group":
             self.domain = "homeassistant"
 
+        self.headers = {
+            "Authorization": f"Bearer {ha_token}",
+            "content-type": "application/json",
+        }
         super().__init__(name=name, port=port)
 
     def send(self, signal: str) -> bool:
-        """Args:
-            signal (const): the state to change to; see service_map
+        """Send `signal` as determined by service_map.
+
+        Args:
+            signal: the signal the service should recongize
         """
-        url = (
-            "http://"
-            + self.ha_host
-            + ":"
-            + str(self.ha_port)
-            + "/api/services/"
-            + self.domain
-            + "/"
-            + signal
-        )
-        headers = {
-            "Authorization": "Bearer " + str(self.ha_token),
-            "content-type": "application/json",
-        }
+        url = f"{self.ha_url}/api/services/{self.domain}/{signal}"
         data = {"entity_id": self.entity_id}
 
-        response = post(url, headers=headers, data=json.dumps(data))
-        return response.status_code == 200
+        req = urllib.request.Request(
+            url=url,
+            headers=self.headers,
+            data=json.dumps(data).encode("utf8"),
+            method="POST",
+        )
+        with urllib.request.urlopen(req) as r:
+            return r.status == 200
 
     def on(self) -> bool:
         """Turn the Home Assistant device on.
-        Returns:
-            Whether the device seems to have been turned on.
+
+        Returns: Whether the device seems to have been turned on.
         """
         on_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]["on"]
         return self.send(on_cmd)
 
     def off(self) -> bool:
         """Turn the Home Assistant device off.
-        Returns:
-            Whether the device seems to have been turned off.
+
+        Returns: Whether the device seems to have been turned off.
         """
         off_cmd = HomeAssistantPlugin.service_map[self.domain.lower()]["off"]
         return self.send(off_cmd)
 
     def get_state(self) -> str:
-        """Query the state of the Home Assistant device."""
+        """Query the state of the Home Assistant device.
 
-        url = (
-            "http://"
-            + self.ha_host
-            + ":"
-            + str(self.ha_port)
-            + "/api/states/"
-            + self.entity_id
-        )
-        headers = {
-            "Authorization": "Bearer " + str(self.ha_token),
-            "content-type": "application/json",
-        }
+        Returns: Device state as reported by HomeAssistant
+        """
+        url = f"{self.ha_url}/api/states/{self.entity_id}"
 
-        response = get(url, headers=headers)
-        return json.loads(response.text)["state"]
+        req = urllib.request.Request(url=url, headers=self.headers)
+        with urllib.request.urlopen(req) as r:
+            response = r.read().decode("utf")
+        return json.loads(response)["state"]
