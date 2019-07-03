@@ -1,4 +1,4 @@
-"""Fauxmo plugin that provides access to services exposing a REST API.
+r"""Fauxmo plugin that provides access to services exposing a REST API.
 
 Uses `requests` for a simpler api.
 
@@ -42,17 +42,18 @@ Example config:
           "off_cmd": "http://192.168.0.5:8123/api/services/switch/turn_off",
           "method": "POST",
           "headers": {
-              "Authorization": "Bearer TOKENGOESHERE",
-              "Content-Type": "application/json"
+            "Authorization": "Bearer TOKENGOESHERE",
+            "Content-Type": "application/json"
           },
           "on_json": {
-              "entity_id": "switch.fake_hass_switch"
+            "entity_id": "switch.fake_hass_switch"
           },
           "off_json": {
-              "entity_id": "switch.fake_hass_switch"
+            "entity_id": "switch.fake_hass_switch"
           },
           "state_method": "GET",
-          "state_cmd": "http://192.168.0.5:8123/api/states/switch.fake_hass_switch",
+          "state_cmd":
+            "http://192.168.0.5:8123/api/states/switch.fake_hass_switch",
           "state_response_on": "\"state\": \"on\"",
           "state_response_off": "\"state\": \"off\""
         }

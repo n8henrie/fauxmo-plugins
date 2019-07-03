@@ -49,6 +49,7 @@ Example config:
 import json
 import urllib.parse
 import urllib.request
+from http.client import HTTPResponse
 
 from fauxmo.plugins import FauxmoPlugin
 
@@ -122,7 +123,10 @@ class HomeAssistantPlugin(FauxmoPlugin):
             method="POST",
         )
         with urllib.request.urlopen(req) as r:
-            return r.status == 200
+            if isinstance(r, HTTPResponse):
+                return r.status == 200
+            else:
+                return False
 
     def on(self) -> bool:
         """Turn the Home Assistant device on.
