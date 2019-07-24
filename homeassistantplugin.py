@@ -36,7 +36,7 @@ Example config:
                 },
                 {
                     "name": "example Home Assistant device 2",
-                    "port": 12345,
+                    "port": 12346,
                     "entity_id": "cover.my_fake_cover"
                 }
             ]
