@@ -37,7 +37,7 @@ Example config:
             "port": 49915,
             "on_cmd": "touch testfile.txt",
             "off_cmd": "rm testfile.txt",
-            "state_cmd": "ls testfile.txt",
+            "state_cmd": "ls testfile.txt"
         }
       ]
     }
