@@ -149,6 +149,8 @@ class RESTAPIPlugin(FauxmoPlugin):
         self.state_response_on = state_response_on
         self.state_response_off = state_response_off
 
+        self.last_state = "unknown"
+
         if auth_type:
             if auth_type.lower() == "basic":
                 self.auth = HTTPBasicAuth(user, password)
@@ -160,10 +162,12 @@ class RESTAPIPlugin(FauxmoPlugin):
 
     def on(self) -> bool:
         """Turn device on."""
+        self.last_state = "on"
         return self.set_state(self.on_cmd, self.on_data, self.on_json)
 
     def off(self) -> bool:
         """Turn device off."""
+        self.last_state = "off"
         return self.set_state(self.off_cmd, self.off_data, self.off_json)
 
     def set_state(self, cmd: str, data: dict, json: dict) -> bool:
@@ -182,11 +186,11 @@ class RESTAPIPlugin(FauxmoPlugin):
         """Get device state.
 
         Returns:
-            "on", "off", or "unknown"
+            "on", "off", otherwise state of last on/off call.
 
         """
         if self.state_cmd is None:
-            return "unknown"
+            return self.last_state
 
         resp = requests.request(
             self.state_method,

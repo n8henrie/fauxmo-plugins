@@ -81,4 +81,4 @@ def test_restapiplugin_unit(restapiplugin_target: pytest.fixture) -> None:
         if device.state_cmd is not None:
             assert state == "on"
         else:
-            assert state == "unknown"
+            assert state == "off"

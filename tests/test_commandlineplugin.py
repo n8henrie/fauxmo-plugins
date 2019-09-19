@@ -57,7 +57,7 @@ def test_commandlineplugin_unit() -> None:
 
         state = device.get_state()
         if device.state_cmd is None:
-            assert state == "unknown"
+            assert state == "off"
         else:
             if "on state" in device.name:
                 assert state == "on"

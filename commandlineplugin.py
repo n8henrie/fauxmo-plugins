@@ -75,6 +75,7 @@ class CommandLinePlugin(FauxmoPlugin):
         self.on_cmd = on_cmd
         self.off_cmd = off_cmd
         self.state_cmd = state_cmd
+        self.last_state = "unknown"
 
         super().__init__(name=name, port=port)
 
@@ -97,6 +98,7 @@ class CommandLinePlugin(FauxmoPlugin):
             True if command seems to have run without error.
 
         """
+        self.last_state = "on"
         return self.run_cmd(self.on_cmd)
 
     def off(self) -> bool:
@@ -106,6 +108,7 @@ class CommandLinePlugin(FauxmoPlugin):
             True if command seems to have run without error.
 
         """
+        self.last_state = "off"
         return self.run_cmd(self.off_cmd)
 
     def get_state(self) -> str:
@@ -119,11 +122,12 @@ class CommandLinePlugin(FauxmoPlugin):
         should always return "off".
 
         Returns:
-            "on" or "off" if `state_cmd` is defined, "unknown" if undefined
+            "on" or "off" if `state_cmd` is defined,
+            otherwise state of last on/off call.
 
         """
         if self.state_cmd is None:
-            return "unknown"
+            return self.last_state
 
         returned_zero = self.run_cmd(self.state_cmd)
         if returned_zero is True:

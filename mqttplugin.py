@@ -168,6 +168,8 @@ class MQTTPlugin(FauxmoPlugin):
             True if device seems to have been turned on.
 
         """
+        if not self.state_cmd:
+            self.status = "on"
         return self._publish(self.on_cmd, self.on_value)
 
     def off(self) -> bool:
@@ -177,6 +179,8 @@ class MQTTPlugin(FauxmoPlugin):
             True if device seems to have been turned off.
 
         """
+        if not self.state_cmd:
+            self.status = "off"
         return self._publish(self.off_cmd, self.off_value)
 
     def get_state(self) -> str:
@@ -186,10 +190,8 @@ class MQTTPlugin(FauxmoPlugin):
         immediately reflect state changed.
 
         Returns:
-            State if known, else "unknown".
+            Actual state if state_cmd is present,
+            otherwise state of last on/off call.
 
         """
-        if self.state_cmd is None:
-            return "unknown"
-
         return self.status
