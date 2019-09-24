@@ -14,14 +14,11 @@ referred to as `handlers`.
 - I've implemented a crude plugin import system that allows users to create
   and user their own plugins by inheriting from `FauxmoPlugin` and including
   the path to the file in their config.
-- This means I can remove dependencies from Fauxmo that some users may not use
-  (e.g. my `homeassistant.remote` stuff), and hopefully users unfamiliar with
-  virtualenvs will quit breaking their installations due to my pinned versions.
+- This means I can remove dependencies from Fauxmo that some users may not use,
+  and hopefully users unfamiliar with virtualenvs will quit breaking their
+  installations due to my pinned versions.
 - I'll be able to update plugins without having to release a new version of
   Fauxmo core, keeping them in their own separate VCS silos.
-- I can implement probably unsafe code like the new `CommandLinePlugin` as a
-  plugin, and users wanting such functionality can easily install at their own
-  risk without making *all* Fauxmo users do so.
 
 ## Using plugins
 
@@ -40,7 +37,10 @@ requirements to get started:
   `off` methods should return a `bool` that suggests whether they succeeded,
   and `get_state` should return `"on"`, `"off"`, or `"unknown"`. If you have no
   way to query state, consider using a simple `return "unknown"` as your
-  `get_state` method.
+  `get_state` method, or you can return `super().get_state()` to use the last
+  successful command as the current state (e.g. of `.on()` succeeded, return
+  `"on"`). Note that this behavior means that if you manually switch a device
+  or change it with another program that your reported state will be incorrect.
 - Your plugin will be initialized if the exact (case sensitive) name is listed
   as a key under the `PLUGINS` section in your Fauxmo configuration (please see
   the Fauxmo docs for details), and if you include the path to the file
