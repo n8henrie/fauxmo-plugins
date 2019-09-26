@@ -2,6 +2,7 @@
 
 import json
 import socket
+import time
 from multiprocessing import Process
 from types import TracebackType
 from typing import Callable, Optional, Type
@@ -37,6 +38,7 @@ class TestFauxmoServer:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                     sock.connect((local_ip, self.first_port))
             except ConnectionRefusedError:
+                time.sleep(0.1)
                 continue
             break
 
