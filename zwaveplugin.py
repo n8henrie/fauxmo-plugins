@@ -45,9 +45,10 @@ import requests
 from fauxmo import logger
 from fauxmo.plugins import FauxmoPlugin
 
-ZwavePlugin_version = "v0.2"
+ZwavePlugin_version = "v0.3"
 
-response_ok = "{\"data\":null,\"code\":200,\"message\":\"200 OK\",\"error\":null}"
+response_ok = '{"data":null,"code":200,"message":"200 OK","error":null}'
+
 
 class ZwavePlugin(FauxmoPlugin):
     """Fauxmo Plugin for Z-WAVE (zway-server) REST API.
@@ -59,17 +60,19 @@ class ZwavePlugin(FauxmoPlugin):
 
     """
 
-    def __init__(self, *, name: str, port: int, 
-
-                 device: str,
-
-                 zwave_host: str="localhost", 
-                 zwave_port: int=8083,
-                 zwave_user: str="admin",
-                 zwave_pass: str=None,
-                 fake_state: bool=False,
-                 state:      str="unknown"
-                 ) -> None:
+    def __init__(
+        self,
+        *,
+        name: str,
+        port: int,
+        device: str,
+        zwave_host: str = "localhost",
+        zwave_port: int = 8083,
+        zwave_user: str = "admin",
+        zwave_pass: str = None,
+        fake_state: bool = False,
+        state: str = "unknown",
+    ) -> None:
 
         """Initialize a ZwaveAPIPlugin instance.
 
@@ -80,27 +83,34 @@ class ZwavePlugin(FauxmoPlugin):
             zwave_pass: Zwave user password
             fake_state: Set to true for it does not exec a query for status, it returns the previous status stored
             state:      Initial device status
+
         """
-        
+
         self.zwave_host = zwave_host
         self.zwave_port = zwave_port
         self.zwave_user = zwave_user
         self.zwave_pass = zwave_pass
-
         self.zwave_device = device
+        self.fake_state = fake_state
 
-        self.fake_state   = fake_state
-        self.state        = state
-
-        logger.info(f"ZwavePlugin: {ZwavePlugin_version} name: {name} device: {device} port: {port} fake_state: {fake_state}")
+        logger.info(
+            f"ZwavePlugin: {ZwavePlugin_version} name: {name} device: {device} port: {port} fake_state: {fake_state}"
+        )
 
         super().__init__(name=name, port=port)
 
-        
+    def ZwaveCmd(self, cmd: str) -> bool:
 
-    def ZwaveCmd(self,cmd:str) -> bool:
-
-        url = "http://" + self.zwave_host + ":" + self.zwave_port + "/ZAutomation/api/v1/devices/" + self.zwave_device + "/command/" + cmd
+        url = (
+            "http://"
+            + self.zwave_host
+            + ":"
+            + self.zwave_port
+            + "/ZAutomation/api/v1/devices/"
+            + self.zwave_device
+            + "/command/"
+            + cmd
+        )
         logger.info(f"ZwavePlugin: Getting {url} ")
 
         try:
@@ -111,7 +121,7 @@ class ZwavePlugin(FauxmoPlugin):
 
         if resp.status_code == 200:
             if resp.text == response_ok:
-                state=cmd  
+                self.state = cmd
                 return True
 
         logger.error(f"ZwavePlugin: {resp.status_code} {resp.text} ")
@@ -134,7 +144,7 @@ class ZwavePlugin(FauxmoPlugin):
 
         """
         return self.ZwaveCmd("off")
-    
+
     def get_state(self) -> str:
         """Get device state.
 
@@ -143,11 +153,20 @@ class ZwavePlugin(FauxmoPlugin):
             If fake_state is set to true, it does not exec a query for status, it returns the previous status stored.
 
         """
+
         if self.fake_state:
             logger.info(f"ZwavePlugin: return fake {self.state} ")
             return self.state
 
-        url = "http://" + self.zwave_host + ":" + self.zwave_port + "/JS/Run/controller.devices.get('" + self.zwave_device + "').get('metrics:level')"
+        url = (
+            "http://"
+            + self.zwave_host
+            + ":"
+            + self.zwave_port
+            + "/JS/Run/controller.devices.get('"
+            + self.zwave_device
+            + "').get('metrics:level')"
+        )
         logger.info(f"ZwavePlugin: Getting {url} ")
 
         try:
@@ -157,8 +176,8 @@ class ZwavePlugin(FauxmoPlugin):
             return "unknown"
 
         if resp.status_code == 200:
-            if resp.text == "\"off\"" or resp.text == "\"on\"":
-                return resp.text.strip('\"')
-     
+            if resp.text == '"off"' or resp.text == '"on"':
+                return resp.text.strip('"')
+
         logger.error(f"ZwavePlugin: {resp.status_code} {resp.text} ")
         return "unknown"

@@ -13,6 +13,9 @@ pytestdebug.log
 *.sav
 *.tmp
 *.bak
+*.orig
+*.patch
+*.diff
 *.log
 __pycache__/
 .pytest_cache/
@@ -21,5 +24,3 @@ __pycache__/
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
-
