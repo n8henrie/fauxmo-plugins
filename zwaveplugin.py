@@ -1,7 +1,10 @@
 """
-Fauxmo plugin that provides access to services exposing by Z-Wave REST API (zway-server) https://z-wave.me/z-way/
-Tested on z-way v2.3.8 / SmartHomeUI v1.9.0. See "Z-Way Essentials" doc for API details.
-Added by Jorge Rivera in June 2019.  
+Fauxmo plugin that provides access to services exposing by Z-Wave REST API.
+
+Tested on z-way v2.3.8 / SmartHomeUI v1.9.0.
+For zway-server see https://z-wave.me/z-way/
+See "Z-Way Essentials" doc for API details.
+Added by Jorge Rivera in June 2019.
 
 Uses `requests` for a simpler api.
 
@@ -41,7 +44,6 @@ Dependencies:
 """
 
 import requests
-
 from fauxmo import logger
 from fauxmo.plugins import FauxmoPlugin
 
@@ -73,19 +75,18 @@ class ZwavePlugin(FauxmoPlugin):
         fake_state: bool = False,
         state: str = "unknown",
     ) -> None:
-
         """Initialize a ZwaveAPIPlugin instance.
 
         Args:
-            zwave_host: IP address or dns name of host computer running zway-server
-            zwave_port: Port running zway-server on the host computer (default 8083)
+            zwave_host: IP address or dns name of zway-server
+            zwave_port: TCP port running zway-server (default 8083)
             zwave_user: Zwave user
             zwave_pass: Zwave user password
-            fake_state: Set to true for it does not exec a query for status, it returns the previous status stored
+            fake_state: Set to true for it does not exec a query for status,
+                        it returns the previous status stored
             state:      Initial device status
 
         """
-
         self.zwave_host = zwave_host
         self.zwave_port = zwave_port
         self.zwave_user = zwave_user
@@ -94,18 +95,20 @@ class ZwavePlugin(FauxmoPlugin):
         self.fake_state = fake_state
 
         logger.info(
-            f"ZwavePlugin: {ZwavePlugin_version} name: {name} device: {device} port: {port} fake_state: {fake_state}"
+            f"ZwavePlugin: {ZwavePlugin_version} "
+            + "name: {name} device: {device} "
+            + "port: {port} fake_state: {fake_state}"
         )
 
         super().__init__(name=name, port=port)
 
-    def ZwaveCmd(self, cmd: str) -> bool:
+    def _ZwaveCmd(self, cmd: str) -> bool:
 
         url = (
             "http://"
             + self.zwave_host
             + ":"
-            + self.zwave_port
+            + str(self.zwave_port)
             + "/ZAutomation/api/v1/devices/"
             + self.zwave_device
             + "/command/"
@@ -134,7 +137,7 @@ class ZwavePlugin(FauxmoPlugin):
             True if command seems to have run without error.
 
         """
-        return self.ZwaveCmd("on")
+        return self._ZwaveCmd("on")
 
     def off(self) -> bool:
         """Run off command.
@@ -143,17 +146,17 @@ class ZwavePlugin(FauxmoPlugin):
             True if command seems to have run without error.
 
         """
-        return self.ZwaveCmd("off")
+        return self._ZwaveCmd("off")
 
     def get_state(self) -> str:
         """Get device state.
 
         Returns:
             "on", "off", or "unknown"
-            If fake_state is set to true, it does not exec a query for status, it returns the previous status stored.
+            If fake_state is set to true, it does not exec a query for status,
+            it returns the previous status stored.
 
         """
-
         if self.fake_state:
             logger.info(f"ZwavePlugin: return fake {self.state} ")
             return self.state
@@ -162,7 +165,7 @@ class ZwavePlugin(FauxmoPlugin):
             "http://"
             + self.zwave_host
             + ":"
-            + self.zwave_port
+            + str(self.zwave_port)
             + "/JS/Run/controller.devices.get('"
             + self.zwave_device
             + "').get('metrics:level')"
