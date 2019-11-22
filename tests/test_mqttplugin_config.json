@@ -1,49 +1,73 @@
 {
-    "FAUXMO": {
-        "ip_address": "auto"
-    },
-    "PLUGINS": {
-        "MQTTPlugin": {
-            "path": "/Users/n8henrie/git/fauxmo-plugins/mqttplugin.py",
-            "DEVICES": [
-                {
-                    "port": 12349,
-                    "on_cmd": [ "Home/Light/Study01", "1" ],
-                    "off_cmd": [ "Home/Light/Study01", "0" ],
-                    "state_cmd": "Home/Light/Study01",
-                    "name":"MQTT Study Light 1",
-                    "mqtt_server": "test.mosquitto.org",
-                    "mqtt_port": 1883
-                },
-                {
-                    "port": 12350,
-                    "on_cmd": [ "Home/Light/Study02", "1" ],
-                    "off_cmd": [ "Home/Light/Study02", "0" ],
-                    "state_cmd": "Home/Light/Study02",
-                    "name":"MQTT Study Light 2",
-                    "mqtt_server": "test.mosquitto.org",
-                    "mqtt_port": 1883
-                },
-                {
-                    "port": 12351,
-                    "on_cmd": [ "Device/With/Auth/No/State", "ON" ],
-                    "off_cmd": [ "Device/With/Auth/No/State", "OFF" ],
-                    "name":"MQTT Device with auth but no state_cmd",
-                    "mqtt_server": "mqtt.yes_auth.no_state",
-                    "mqtt_port": 1883,
-                    "mqtt_user": "MyUser",
-                    "mqtt_pw": "MyPassword"
-                },
-                {
-                    "port": 12352,
-                    "on_cmd": [ "Device/Without/Auth/With/State", "ON" ],
-                    "off_cmd": [ "Device/Without/Auth/With/State", "OFF" ],
-                    "state_cmd": "Device/Without/Auth/With/State/stat",
-                    "name":"MQTT Device with no auth but does have state",
-                    "mqtt_server": "mqtt.no_auth.yes_state",
-                    "mqtt_port": 1883
-                }
-            ]
+  "FAUXMO": {
+    "ip_address": "auto"
+  },
+  "PLUGINS": {
+    "MQTTPlugin": {
+      "path": "mqttplugin.py",
+      "DEVICES": [
+        {
+          "port": 12349,
+          "on_cmd": [
+            "Home/Light/Study01",
+            "1"
+          ],
+          "off_cmd": [
+            "Home/Light/Study01",
+            "0"
+          ],
+          "state_cmd": "Home/Light/Study01",
+          "name": "MQTT Study Light 1",
+          "mqtt_server": "test.mosquitto.org",
+          "mqtt_port": 1883
+        },
+        {
+          "port": 12350,
+          "on_cmd": [
+            "Home/Light/Study02",
+            "1"
+          ],
+          "off_cmd": [
+            "Home/Light/Study02",
+            "0"
+          ],
+          "state_cmd": "Home/Light/Study02",
+          "name": "MQTT Study Light 2",
+          "mqtt_server": "test.mosquitto.org",
+          "mqtt_port": 1883
+        },
+        {
+          "port": 12351,
+          "on_cmd": [
+            "Device/With/Auth/No/State",
+            "ON"
+          ],
+          "off_cmd": [
+            "Device/With/Auth/No/State",
+            "OFF"
+          ],
+          "name": "MQTT Device with auth but no state_cmd",
+          "mqtt_server": "mqtt.yes_auth.no_state",
+          "mqtt_port": 1883,
+          "mqtt_user": "MyUser",
+          "mqtt_pw": "MyPassword"
+        },
+        {
+          "port": 12352,
+          "on_cmd": [
+            "Device/Without/Auth/With/State",
+            "ON"
+          ],
+          "off_cmd": [
+            "Device/Without/Auth/With/State",
+            "OFF"
+          ],
+          "state_cmd": "Device/Without/Auth/With/State/stat",
+          "name": "MQTT Device with no auth but does have state",
+          "mqtt_server": "mqtt.no_auth.yes_state",
+          "mqtt_port": 1883
         }
+      ]
     }
+  }
 }

@@ -1,6 +1,7 @@
 """test_restapiplugin.py :: Tests for Fauxmo's `RESTAPIPlugin`."""
 
 import json
+import socket
 import time
 from multiprocessing import Process
 from typing import Generator
@@ -17,14 +18,27 @@ config_path_str = "tests/test_restapiplugin_config.json"
 @pytest.fixture(scope="function")
 def restapiplugin_target() -> Generator:
     """Simulate the endpoints triggered by RESTAPIPlugin."""
+    httpbin_address = ("127.0.0.1", 8000)
     fauxmo_device = Process(
         target=httpbin.core.app.run,
-        kwargs={"host": "127.0.0.1", "port": 8000},
+        kwargs={
+            "host": httpbin_address[0],
+            "port": httpbin_address[1],
+            "threaded": True,
+        },
         daemon=True,
     )
 
     fauxmo_device.start()
-    time.sleep(1)
+
+    for _retry in range(10):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.connect(httpbin_address)
+        except ConnectionRefusedError:
+            time.sleep(0.1)
+            continue
+        break
 
     yield
 

@@ -128,6 +128,7 @@ class RESTAPIPlugin(FauxmoPlugin):
             state_response_on: If this string is in the response to state_cmd,
                                the device is on.
             user: Username for `auth`
+
         """
         self.method = method
         self.state_method = state_method

@@ -1,5 +1,7 @@
 """conftest.py :: Setup fixtures for pytest."""
 
+import json
+import socket
 import time
 from multiprocessing import Process
 from types import TracebackType
@@ -16,6 +18,10 @@ class TestFauxmoServer:
     def __init__(self, config_path_str: str) -> None:
         """Initialize test Fauxmo server with path to config."""
         self.config_path_str = config_path_str
+        with open(config_path_str) as f:
+            config = json.load(f)
+        first_plugin = [*config["PLUGINS"].values()][0]
+        self.first_port = first_plugin["DEVICES"][0]["port"]
 
     def __enter__(self) -> str:
         """Start a TextFauxmoServer, returns the ip address it's running on."""
@@ -25,7 +31,17 @@ class TestFauxmoServer:
             daemon=True,
         )
         self.server.start()
-        time.sleep(1)
+
+        local_ip = get_local_ip()
+        for _retry in range(10):
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                    sock.connect((local_ip, self.first_port))
+            except ConnectionRefusedError:
+                time.sleep(0.1)
+                continue
+            break
+
         return get_local_ip()
 
     def __exit__(
