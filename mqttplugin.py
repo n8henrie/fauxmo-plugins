@@ -71,7 +71,7 @@ from typing import List, Sequence
 
 from fauxmo.plugins import FauxmoPlugin
 from paho.mqtt.client import Client, MQTTMessage
-
+import json
 
 class MQTTPlugin(FauxmoPlugin):
     """Fauxmo plugin to interact with an MQTT server by way of paho."""
@@ -146,7 +146,13 @@ class MQTTPlugin(FauxmoPlugin):
         self, client: Client, userdata: str, message: MQTTMessage
     ) -> None:
         """Process an incoming message."""
-        status = message.payload.decode("utf-8")
+        data = message.payload.decode("utf-8")
+
+        try:
+            msg = json.loads(data)
+            status = msg['state']
+        except ValueError as e:
+            status = data
 
         if status == self.off_value:
             self.status = "off"
