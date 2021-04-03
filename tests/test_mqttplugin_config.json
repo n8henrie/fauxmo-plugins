@@ -13,6 +13,7 @@
                     "state_cmd": "Home/Light/Study01",
                     "name":"MQTT Study Light 1",
                     "mqtt_server": "test.mosquitto.org",
+                    "mqtt_client_id": "test_client_1",
                     "mqtt_port": 1883
                 },
                 {

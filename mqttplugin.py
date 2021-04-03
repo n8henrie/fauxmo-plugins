@@ -29,6 +29,7 @@ Example config:
                     "state_cmd": "Home/Light/Study01",
                     "name":"MQTT Study Light 1",
                     "mqtt_server": "test.mosquitto.org",
+                    "mqtt_client_id": "study_light_one",
                     "mqtt_port": 1883
                 },
                 {
@@ -87,6 +88,7 @@ class MQTTPlugin(FauxmoPlugin):
         mqtt_pw: str = None,
         mqtt_user: str = None,
         mqtt_server: str = "127.0.0.1",
+        mqtt_client_id: str = "",
         state_cmd: str = None,
     ) -> None:
         """Initialize an MQTTPlugin instance.
@@ -97,6 +99,7 @@ class MQTTPlugin(FauxmoPlugin):
 
             mqttport: MQTT server port
             mqttserver: MQTT server address
+            mqttclientid: MQTT client id
             mqttuser: MQTT username
             mqttpw: MQTT password
             off_cmd: [ MQTT Queue, value to be publshed as str ] to turn off
@@ -109,7 +112,7 @@ class MQTTPlugin(FauxmoPlugin):
         self.status = "unknown"
         self._subscribed = False
 
-        self.client = Client()
+        self.client = Client(client_id=mqtt_client_id)
         if mqtt_user or mqtt_pw:
             self.client.username_pw_set(mqtt_user, mqtt_pw)
         self.client.on_connect = self.on_connect

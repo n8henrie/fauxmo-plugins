@@ -96,3 +96,20 @@ def test_mqtt_noauth(mock_client: MagicMock) -> None:
     )
     MQTTPlugin(**device_conf)
     mock_instance.username_pw_set.assert_not_called()
+
+
+@patch("mqttplugin.Client", autospec=True)
+def test_mqtt_clientid(mock_client: MagicMock) -> None:
+    """Ensure mqtt client id is properly set when configured."""
+    with open(config_path_str) as f:
+        config: dict = json.load(f)
+
+    device_conf = next(
+        device
+        for device in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]
+        if device["mqtt_client_id"]
+    )
+    MQTTPlugin(**device_conf)
+    mock_client.assert_called_once_with(
+        client_id=device_conf["mqtt_client_id"]
+    )
