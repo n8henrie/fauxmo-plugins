@@ -4,7 +4,7 @@
   },
   "PLUGINS": {
     "MQTTPlugin": {
-      "path": "mqttplugin.py",
+      "path": "/Users/n8henrie/git/fauxmo-plugins/mqttplugin.py",
       "DEVICES": [
         {
           "port": 12349,
@@ -19,6 +19,7 @@
           "state_cmd": "Home/Light/Study01",
           "name": "MQTT Study Light 1",
           "mqtt_server": "test.mosquitto.org",
+          "mqtt_client_id": "test_client_1",
           "mqtt_port": 1883
         },
         {
