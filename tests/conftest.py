@@ -33,7 +33,8 @@ class TestFauxmoServer:
         )
         self.server.start()
 
-        local_ip = get_local_ip()
+        local_ip = "127.0.0.1"
+        # Wait for the server to be ready
         for _retry in range(10):
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
