@@ -1,7 +1,9 @@
 # fauxmo-plugins
 
-master: [![master branch build status](https://travis-ci.org/n8henrie/fauxmo-plugins.svg?branch=master)](https://travis-ci.org/n8henrie/fauxmo-plugins/branches)
-dev: [![dev branch build status](https://travis-ci.org/n8henrie/fauxmo-plugins.svg?branch=dev)](https://travis-ci.org/n8henrie/fauxmo-plugins/branches)
+master: [![master branch build
+status](https://github.com/n8henrie/fauxmo-plugins/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/n8henrie/fauxmo-plugins/actions/workflows/python-package.yml)
+dev: [![dev branch build
+status](https://github.com/n8henrie/fauxmo-plugins/actions/workflows/python-package.yml/badge.svg?branch=dev)](https://github.com/n8henrie/fauxmo-plugins/actions/workflows/python-package.yml)
 
 Plugins for Fauxmo (emulated Wemo devices for the Amazon Echo)
 
