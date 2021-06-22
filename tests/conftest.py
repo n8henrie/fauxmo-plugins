@@ -9,7 +9,6 @@ from typing import Callable, Optional, Type
 
 import pytest
 from fauxmo import fauxmo
-from fauxmo.utils import get_local_ip
 
 
 class TestFauxmoServer:

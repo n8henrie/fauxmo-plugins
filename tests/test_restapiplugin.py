@@ -4,7 +4,7 @@ import json
 import multiprocessing as mp
 import socket
 import time
-from typing import Generator
+from typing import Callable, Generator
 
 import httpbin
 import pytest
@@ -48,7 +48,7 @@ def restapiplugin_target() -> Generator:
 
 
 def test_restapiplugin_integration(
-    fauxmo_server: pytest.fixture, restapiplugin_target: pytest.fixture
+    fauxmo_server: Callable, restapiplugin_target: Callable
 ) -> None:
     """Test "on" and "off" actions for RESTAPIPlugin.
 
@@ -82,7 +82,7 @@ def test_restapiplugin_integration(
     assert resp_state.status_code == 200
 
 
-def test_restapiplugin_unit(restapiplugin_target: pytest.fixture) -> None:
+def test_restapiplugin_unit(restapiplugin_target: Callable) -> None:
     """Test simple unit tests on just the device without the integration."""
     with open(config_path_str) as f:
         config: dict = json.load(f)
