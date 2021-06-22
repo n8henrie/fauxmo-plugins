@@ -14,11 +14,12 @@ from restapiplugin import RESTAPIPlugin
 
 config_path_str = "tests/test_restapiplugin_config.json"
 
+
 @pytest.fixture(scope="function")
 def restapiplugin_target() -> Generator:
     """Simulate the endpoints triggered by RESTAPIPlugin."""
     httpbin_address = ("127.0.0.1", 8000)
-    ctx = mp.get_context('fork')
+    ctx = mp.get_context("fork")
     fauxmo_device = ctx.Process(
         target=httpbin.core.app.run,
         kwargs={

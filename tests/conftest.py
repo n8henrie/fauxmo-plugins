@@ -25,7 +25,7 @@ class TestFauxmoServer:
 
     def __enter__(self) -> str:
         """Start a TextFauxmoServer, returns the ip address it's running on."""
-        ctx = mp.get_context('fork')
+        ctx = mp.get_context("fork")
         self.server = ctx.Process(
             target=fauxmo.main,
             kwargs={"config_path_str": self.config_path_str},
