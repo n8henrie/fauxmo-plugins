@@ -1,9 +1,9 @@
 """conftest.py :: Setup fixtures for pytest."""
 
 import json
+import multiprocessing as mp
 import socket
 import time
-from multiprocessing import Process
 from types import TracebackType
 from typing import Callable, Optional, Type
 
@@ -25,7 +25,8 @@ class TestFauxmoServer:
 
     def __enter__(self) -> str:
         """Start a TextFauxmoServer, returns the ip address it's running on."""
-        self.server = Process(
+        ctx = mp.get_context('fork')
+        self.server = ctx.Process(
             target=fauxmo.main,
             kwargs={"config_path_str": self.config_path_str},
             daemon=True,
@@ -42,7 +43,7 @@ class TestFauxmoServer:
                 continue
             break
 
-        return get_local_ip()
+        return local_ip
 
     def __exit__(
         self,

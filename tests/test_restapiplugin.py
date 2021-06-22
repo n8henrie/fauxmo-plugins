@@ -1,9 +1,9 @@
 """test_restapiplugin.py :: Tests for Fauxmo's `RESTAPIPlugin`."""
 
 import json
+import multiprocessing as mp
 import socket
 import time
-from multiprocessing import Process
 from typing import Generator
 
 import httpbin
@@ -14,12 +14,12 @@ from restapiplugin import RESTAPIPlugin
 
 config_path_str = "tests/test_restapiplugin_config.json"
 
-
 @pytest.fixture(scope="function")
 def restapiplugin_target() -> Generator:
     """Simulate the endpoints triggered by RESTAPIPlugin."""
     httpbin_address = ("127.0.0.1", 8000)
-    fauxmo_device = Process(
+    ctx = mp.get_context('fork')
+    fauxmo_device = ctx.Process(
         target=httpbin.core.app.run,
         kwargs={
             "host": httpbin_address[0],
