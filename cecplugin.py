@@ -46,7 +46,6 @@ class CECPlugin(FauxmoPlugin):
     """Fauxmo plugin to interact with devices over HDMI-CEC via an adapter.
     
     Often, the default Kwargs are enough to get things working.
-    If you're having issues getting the TV to detect, you should try setting fake_state to True in the config.
     """
 
 
@@ -56,8 +55,7 @@ class CECPlugin(FauxmoPlugin):
         name: str,
         port: int,
         cec_adapter: str = None,
-        tv_address: str = "0.0.0.0",
-        fake_state: bool = False
+        tv_address: str = "0.0.0.0"
     ) -> None:
         """Initialize a CECPlugin instance.
 
@@ -66,12 +64,10 @@ class CECPlugin(FauxmoPlugin):
             port: Port for Fauxmo to make this device avail to Echo
             cec_adapter: A full path to the adapter port (Optional, defaults to first adapter detected by libcec)
             cec_address: The cec device address to control (Optional, defaults to 0.0.0.0 aka address 0)
-            fake_state: Whether or not the cec device should be queried for state or not (Optional, defaults to False)
         """
 
         self.cec_adapter = cec_adapter
         self.tv_address = tv_address
-        self.fake_state = fake_state
 
         # Init CEC connection
         if self.cec_adapter:
@@ -104,10 +100,7 @@ class CECPlugin(FauxmoPlugin):
     def get_state(self) -> str:
         """Get power status for the device
         Returns:
-            "on" or "off"
-            If fake_state is set to True, it does not query the cec device for it's status.
+            super().get_state()
         """
-        if (self.fake_state):
-            return super().get_state()
-        else:
-            return "on" if self.device.is_on() else "off"
+        return super().get_state()
+
