@@ -64,14 +64,14 @@ Example config:
 ```
 
 Dependencies:
-    requests==2.18.4
+    requests==2.28.2
 """
 
-import requests
-from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from typing import Union  # noqa
 
+import requests
 from fauxmo.plugins import FauxmoPlugin
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 
 class RESTAPIPlugin(FauxmoPlugin):
