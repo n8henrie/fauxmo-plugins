@@ -65,7 +65,7 @@ Example config:
 ```
 
 Dependencies:
-    paho-mqtt==1.3.1
+    paho-mqtt==1.6.1
 """
 
 from typing import List, Sequence
