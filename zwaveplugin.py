@@ -40,7 +40,7 @@ Example config:
 ```
 
 Dependencies:
-    requests==2.18.4
+    requests==2.28.2
 """
 
 import requests
@@ -103,7 +103,6 @@ class ZwavePlugin(FauxmoPlugin):
         super().__init__(name=name, port=port)
 
     def _ZwaveCmd(self, cmd: str) -> bool:
-
         url = (
             "http://"
             + self.zwave_host
