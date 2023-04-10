@@ -24,6 +24,8 @@ Example config:
             "DEVICES": [
                 {
                     "port": 12349,
+                    "initial_state": "on",
+                    "use_fake_state": False,
                     "on_cmd": [ "Home/Light/Study01", "1" ],
                     "off_cmd": [ "Home/Light/Study01", "0" ],
                     "state_cmd": "Home/Light/Study01",
@@ -68,7 +70,7 @@ Dependencies:
     paho-mqtt==1.6.1
 """
 
-from typing import List, Sequence
+import typing as t
 
 from fauxmo.plugins import FauxmoPlugin
 from paho.mqtt.client import Client, MQTTMessage
@@ -82,16 +84,29 @@ class MQTTPlugin(FauxmoPlugin):
         *,
         name: str,
         port: int,
-        off_cmd: Sequence[str],
-        on_cmd: Sequence[str],
+        initial_state: t.Optional[str] = None,
+        off_cmd: t.Sequence[str],
+        on_cmd: t.Sequence[str],
         mqtt_port: int = 1883,
-        mqtt_pw: str = None,
-        mqtt_user: str = None,
+        mqtt_pw: t.Optional[str] = None,
+        mqtt_user: str = "",
         mqtt_server: str = "127.0.0.1",
         mqtt_client_id: str = "",
-        state_cmd: str = None,
+        state_cmd: t.Optional[str] = None,
+        use_fake_state: bool = False,
     ) -> None:
         """Initialize an MQTTPlugin instance.
+
+        `initial_state` may be required when initially adding a MQTT device to
+        Alexa, as the `state_cmd` is called asynchronously instead of on
+        demand. This means that when adding a new device, Alexa will likely get
+        an `"unknown"` result, which the Fauxmo server will discard as invalid
+        and fail to return a successul response to the Echo. Setting an
+        arbitrary `initial_state` should allow the device to be added, and
+        after the first call to the `on()` or `off()` methods the state should
+        be properly updated and reflected on subsequent `get_state()` calls.
+
+        See also: https://github.com/n8henrie/fauxmo-plugins/issues/26
 
         Kwargs:
             name: device name
@@ -102,15 +117,22 @@ class MQTTPlugin(FauxmoPlugin):
             mqttclientid: MQTT client id
             mqttuser: MQTT username
             mqttpw: MQTT password
+            initial_state: "on"|"off" see explanation above
             off_cmd: [ MQTT Queue, value to be publshed as str ] to turn off
             on_cmd: [ MQTT Queue, value to be publshed as str ] to turn on
             state_cmd: MQTT Queue to get state
+            use_fake_state: If `True`, override `get_state` to return the
+                            latest action as the device state. NB: The proper
+                            json boolean value for Python's `True` is `true`,
+                            not `True` or `"true"`.
         """
         self.on_cmd, self.on_value = on_cmd[0], on_cmd[1]
         self.off_cmd, self.off_value = off_cmd[0], off_cmd[1]
         self.state_cmd = state_cmd
         self.status = "unknown"
         self._subscribed = False
+        self.initial_state = initial_state
+        self.use_fake_state = use_fake_state
 
         self.client = Client(client_id=mqtt_client_id)
         if mqtt_user or mqtt_pw:
@@ -133,7 +155,11 @@ class MQTTPlugin(FauxmoPlugin):
         return self._subscribed
 
     def on_subscribe(
-        self, client: Client, userdata: str, mid: int, granted_qos: List[int]
+        self,
+        client: Client,
+        userdata: str,
+        mid: int,
+        granted_qos: t.Tuple[int],
     ) -> None:
         """Set attribute to show that initial subscription is complete."""
         self._subscribed = True
@@ -156,7 +182,8 @@ class MQTTPlugin(FauxmoPlugin):
         elif status == self.on_value:
             self.status = "on"
 
-    def _publish(self, topic: str, value: str) -> bool:
+    def publish(self, topic: str, value: str) -> bool:
+        """Publish `value` to `topic`."""
         msg = self.client.publish(topic, value)
         try:
             msg.wait_for_publish()
@@ -171,7 +198,7 @@ class MQTTPlugin(FauxmoPlugin):
             True if device seems to have been turned on.
 
         """
-        return self._publish(self.on_cmd, self.on_value)
+        return self.publish(self.on_cmd, self.on_value)
 
     def off(self) -> bool:
         """Turn off MQTT device.
@@ -180,19 +207,26 @@ class MQTTPlugin(FauxmoPlugin):
             True if device seems to have been turned off.
 
         """
-        return self._publish(self.off_cmd, self.off_value)
+        return self.publish(self.off_cmd, self.off_value)
 
     def get_state(self) -> str:
         """Return the self.status attribute.
 
-        `self.status` is set asynchronously in on_message, so it may not
+        `self.status` is set asynchronously in `on_message`, so it may not
         immediately reflect state changed.
 
         Returns:
             State if known, else "unknown".
 
         """
-        if self.state_cmd is None:
-            return "unknown"
+        if self.status != "unknown":
+            return self.status
 
-        return self.status
+        if self.initial_state is not None:
+            state, self.initial_state = self.initial_state, None
+            return state
+
+        if self.use_fake_state is True:
+            return super().get_state()
+
+        return "unknown"
