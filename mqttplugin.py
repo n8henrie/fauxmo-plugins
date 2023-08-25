@@ -145,9 +145,7 @@ class MQTTPlugin(FauxmoPlugin):
 
         super().__init__(name=name, port=port)
 
-        # Looping thread only seems necessary for status updates
-        if self.state_cmd is not None:
-            self.client.loop_start()
+        self.client.loop_start()
 
     @property
     def subscribed(self) -> bool:
