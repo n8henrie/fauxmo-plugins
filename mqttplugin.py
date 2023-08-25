@@ -129,10 +129,13 @@ class MQTTPlugin(FauxmoPlugin):
         self.on_cmd, self.on_value = on_cmd[0], on_cmd[1]
         self.off_cmd, self.off_value = off_cmd[0], off_cmd[1]
         self.state_cmd = state_cmd
-        self.status = "unknown"
         self._subscribed = False
-        self.initial_state = initial_state
+
         self.use_fake_state = use_fake_state
+        if initial_state is not None:
+            self.status = initial_state
+        else:
+            self.status = "unknown"
 
         self.client = Client(client_id=mqtt_client_id)
         if mqtt_user or mqtt_pw:
@@ -217,14 +220,7 @@ class MQTTPlugin(FauxmoPlugin):
             State if known, else "unknown".
 
         """
-        if self.status != "unknown":
-            return self.status
-
-        if self.initial_state is not None:
-            state, self.initial_state = self.initial_state, None
-            return state
-
         if self.use_fake_state is True:
             return super().get_state()
 
-        return "unknown"
+        return self.status
