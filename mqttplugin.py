@@ -70,6 +70,8 @@ Dependencies:
     paho-mqtt==1.6.1
 """
 
+from __future__ import annotations
+
 import typing as t
 
 from fauxmo.plugins import FauxmoPlugin

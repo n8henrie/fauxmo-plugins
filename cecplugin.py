@@ -40,6 +40,8 @@ PyPi Dependencies:
     cec>=0.2.8
 """
 
+from __future__ import annotations
+
 import typing as t
 
 import cec
