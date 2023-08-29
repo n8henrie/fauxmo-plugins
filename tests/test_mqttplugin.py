@@ -67,15 +67,14 @@ def test_mqtt_auth(mock_client: MagicMock) -> None:
 @patch("mqttplugin.Client", autospec=True)
 def test_mqtt_nostate(mock_client: MagicMock) -> None:
     """Ensure loop_start is called whether or not no_state is specified."""
-    mock_instance = mock_client.return_value
     with open(config_path_str) as f:
         config: dict = json.load(f)
 
     for device_conf in config["PLUGINS"]["MQTTPlugin"]["DEVICES"]:
-        device = MQTTPlugin(**device_conf)
-        mock_instance.loop_start.assert_called()
-        mock_instance.subscribe.assert_called()
-        assert device.subscribed is True
+        mock_instance = mock_client.return_value
+        _ = MQTTPlugin(**device_conf)
+        mock_instance.loop_start.assert_called_once()
+        mock_client.reset_mock()
 
 
 @patch("mqttplugin.Client", autospec=True)
