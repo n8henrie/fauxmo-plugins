@@ -67,7 +67,7 @@ Example config:
 ```
 
 Dependencies:
-    paho-mqtt==1.6.1
+    paho-mqtt==2.0.0
 """
 
 from __future__ import annotations
@@ -75,7 +75,7 @@ from __future__ import annotations
 import typing as t
 
 from fauxmo.plugins import FauxmoPlugin
-from paho.mqtt.client import Client, MQTTMessage
+from paho.mqtt.client import Client, MQTTMessage, CallbackAPIVersion
 
 
 class MQTTPlugin(FauxmoPlugin):
@@ -139,7 +139,7 @@ class MQTTPlugin(FauxmoPlugin):
         else:
             self.status = "unknown"
 
-        self.client = Client(client_id=mqtt_client_id)
+        self.client = Client(CallbackAPIVersion.VERSION1, client_id=mqtt_client_id)
         if mqtt_user or mqtt_pw:
             self.client.username_pw_set(mqtt_user, mqtt_pw)
         self.client.on_connect = self.on_connect
