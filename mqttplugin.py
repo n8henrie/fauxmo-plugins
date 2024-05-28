@@ -67,7 +67,7 @@ Example config:
 ```
 
 Dependencies:
-    paho-mqtt==2.0.0
+    paho-mqtt==2.1.0
 """
 
 import typing as t
