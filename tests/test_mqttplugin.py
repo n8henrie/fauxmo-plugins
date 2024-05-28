@@ -4,7 +4,7 @@ import json
 import time
 from unittest.mock import MagicMock, patch
 
-from mqttplugin import MQTTPlugin, CallbackAPIVersion
+from mqttplugin import CallbackAPIVersion, MQTTPlugin
 
 config_path_str = "tests/test_mqttplugin_config.json"
 
