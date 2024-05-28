@@ -139,7 +139,9 @@ class MQTTPlugin(FauxmoPlugin):
         else:
             self.status = "unknown"
 
-        self.client = Client(CallbackAPIVersion.VERSION1, client_id=mqtt_client_id)
+        self.client = Client(
+            CallbackAPIVersion.VERSION1, client_id=mqtt_client_id
+        )
         if mqtt_user or mqtt_pw:
             self.client.username_pw_set(mqtt_user, mqtt_pw)
         self.client.on_connect = self.on_connect
