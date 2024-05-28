@@ -148,7 +148,7 @@ class MQTTPlugin(FauxmoPlugin):
 
         self.client.connect(mqtt_server, mqtt_port, 60)
 
-        super().__init__(name=name, port=port)
+        super().__init__(name=name, port=port, initial_state=initial_state)
 
         self.client.loop_start()
 
