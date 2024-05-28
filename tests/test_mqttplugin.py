@@ -4,7 +4,7 @@ import json
 import time
 from unittest.mock import MagicMock, patch
 
-from mqttplugin import MQTTPlugin
+from mqttplugin import MQTTPlugin, CallbackAPIVersion
 
 config_path_str = "tests/test_mqttplugin_config.json"
 
@@ -111,5 +111,5 @@ def test_mqtt_clientid(mock_client: MagicMock) -> None:
     )
     MQTTPlugin(**device_conf)
     mock_client.assert_called_once_with(
-        client_id=device_conf["mqtt_client_id"]
+        CallbackAPIVersion.VERSION1, client_id=device_conf["mqtt_client_id"]
     )
