@@ -12,6 +12,7 @@ config_path_str = "tests/test_mqttplugin_config.json"
 def test_mqttplugin_mosquitto_dot_org() -> None:
     """Test MQTTPlugin against test.mosquitto.org."""
     retries = 100
+    sleep = 0.5
 
     with open(config_path_str) as f:
         config: dict = json.load(f)
@@ -27,7 +28,7 @@ def test_mqttplugin_mosquitto_dot_org() -> None:
         for _ in range(100):
             if device.subscribed is True:
                 break
-            time.sleep(0.1)
+            time.sleep(sleep)
         else:
             assert False, "Time out waiting for subscribe."
 
@@ -36,7 +37,7 @@ def test_mqttplugin_mosquitto_dot_org() -> None:
             state = device.get_state()
             if state != "unknown":
                 break
-            time.sleep(0.1)
+            time.sleep(sleep)
         assert state == "on"
 
         assert device.off() is True
@@ -44,7 +45,7 @@ def test_mqttplugin_mosquitto_dot_org() -> None:
             state = device.get_state()
             if state != "on":
                 break
-            time.sleep(0.1)
+            time.sleep(sleep)
         assert state == "off"
 
 
