@@ -67,13 +67,15 @@ Example config:
 ```
 
 Dependencies:
-    paho-mqtt==1.6.1
+    paho-mqtt==2.1.0
 """
+
+from __future__ import annotations
 
 import typing as t
 
 from fauxmo.plugins import FauxmoPlugin
-from paho.mqtt.client import Client, MQTTMessage
+from paho.mqtt.client import CallbackAPIVersion, Client, MQTTMessage
 
 
 class MQTTPlugin(FauxmoPlugin):
@@ -129,12 +131,17 @@ class MQTTPlugin(FauxmoPlugin):
         self.on_cmd, self.on_value = on_cmd[0], on_cmd[1]
         self.off_cmd, self.off_value = off_cmd[0], off_cmd[1]
         self.state_cmd = state_cmd
-        self.status = "unknown"
         self._subscribed = False
-        self.initial_state = initial_state
-        self.use_fake_state = use_fake_state
 
-        self.client = Client(client_id=mqtt_client_id)
+        self.use_fake_state = use_fake_state
+        if initial_state is not None:
+            self.status = initial_state
+        else:
+            self.status = "unknown"
+
+        self.client = Client(
+            CallbackAPIVersion.VERSION1, client_id=mqtt_client_id
+        )
         if mqtt_user or mqtt_pw:
             self.client.username_pw_set(mqtt_user, mqtt_pw)
         self.client.on_connect = self.on_connect
@@ -143,7 +150,7 @@ class MQTTPlugin(FauxmoPlugin):
 
         self.client.connect(mqtt_server, mqtt_port, 60)
 
-        super().__init__(name=name, port=port)
+        super().__init__(name=name, port=port, initial_state=initial_state)
 
         self.client.loop_start()
 
@@ -157,7 +164,7 @@ class MQTTPlugin(FauxmoPlugin):
         client: Client,
         userdata: str,
         mid: int,
-        granted_qos: t.Tuple[int],
+        granted_qos: t.Tuple[int, ...],
     ) -> None:
         """Set attribute to show that initial subscription is complete."""
         self._subscribed = True
@@ -217,14 +224,7 @@ class MQTTPlugin(FauxmoPlugin):
             State if known, else "unknown".
 
         """
-        if self.status != "unknown":
-            return self.status
-
-        if self.initial_state is not None:
-            state, self.initial_state = self.initial_state, None
-            return state
-
         if self.use_fake_state is True:
             return super().get_state()
 
-        return "unknown"
+        return self.status

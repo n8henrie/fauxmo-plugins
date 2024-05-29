@@ -67,7 +67,7 @@ Dependencies:
     requests==2.28.2
 """
 
-from typing import Union  # noqa
+from __future__ import annotations
 
 import requests
 from fauxmo.plugins import FauxmoPlugin
@@ -133,7 +133,7 @@ class RESTAPIPlugin(FauxmoPlugin):
         self.method = method
         self.state_method = state_method
         self.headers = headers
-        self.auth: Union[HTTPBasicAuth, HTTPDigestAuth] = None
+        self.auth: HTTPBasicAuth | HTTPDigestAuth = None
 
         self.on_cmd = on_cmd
         self.off_cmd = off_cmd

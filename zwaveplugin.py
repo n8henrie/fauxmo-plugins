@@ -43,6 +43,8 @@ Dependencies:
     requests==2.28.2
 """
 
+from __future__ import annotations
+
 import requests
 from fauxmo import logger
 from fauxmo.plugins import FauxmoPlugin

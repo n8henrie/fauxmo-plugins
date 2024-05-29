@@ -6,7 +6,7 @@ flake8-import-order==0.18.2
 flake8==3.9.2
 httpbin==0.7.0
 mypy==1.2.0
-paho-mqtt==1.6.1
+paho-mqtt==2.1.0
 pycodestyle==2.7.0
 pydocstyle==6.1.1
 pytest==7.3.0
