@@ -73,7 +73,7 @@ Dependencies:
 import typing as t
 
 from fauxmo.plugins import FauxmoPlugin
-from paho.mqtt.client import Client, MQTTMessage, CallbackAPIVersion
+from paho.mqtt.client import CallbackAPIVersion, Client, MQTTMessage
 
 
 class MQTTPlugin(FauxmoPlugin):
