@@ -159,7 +159,7 @@ class MQTTPlugin(FauxmoPlugin):
         client: Client,
         userdata: str,
         mid: int,
-        granted_qos: t.Tuple[int],
+        granted_qos: t.Tuple[int, ...],
     ) -> None:
         """Set attribute to show that initial subscription is complete."""
         self._subscribed = True
