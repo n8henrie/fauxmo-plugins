@@ -1,6 +1,6 @@
 -i https://pypi.org/simple
 https://github.com/n8henrie/fauxmo/archive/dev.zip
-black==24.3.0
+black==26.10.1
 flake8-docstrings==1.7.0
 flake8-import-order==0.18.2
 flake8==3.9.2
